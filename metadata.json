@@ -1,0 +1,5 @@
+{
+  "name": "ChatCart by WapDev",
+  "description": "The ultimate Menu-to-Messenger digital platform for modern food and beverage businesses.",
+  "requestFramePermissions": ["camera", "geolocation"]
+}
