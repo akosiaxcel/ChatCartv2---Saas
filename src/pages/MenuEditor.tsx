@@ -532,6 +532,16 @@ export default function MenuEditor() {
                       Remove Photo
                     </button>
                   )}
+                  
+                  <div className="w-full mt-2">
+                    <input
+                      type="url"
+                      placeholder="Or paste direct image URL (https://...)"
+                      value={editingItem.imageUrl?.startsWith('data:') ? '' : (editingItem.imageUrl || '')}
+                      onChange={(e) => setEditingItem({ ...editingItem, imageUrl: e.target.value.trim() })}
+                      className="w-full text-[11px] px-3 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-hidden"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1">

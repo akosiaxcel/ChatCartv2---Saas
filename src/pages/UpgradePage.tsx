@@ -18,7 +18,9 @@ import {
   MessageSquare,
   Utensils,
   Zap,
-  HelpCircle
+  HelpCircle,
+  UserPlus,
+  AlertCircle
 } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
@@ -156,6 +158,8 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
     }
   };
 
+  const signupRedirectUrl = `/login?mode=signup&businessName=${encodeURIComponent(storeName.trim())}&email=${encodeURIComponent(ownerContact.trim())}&paymentRef=${encodeURIComponent(refNumber.trim())}`;
+
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col justify-between">
       {/* Top Navbar */}
@@ -249,7 +253,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                 Direct WapDev Verification
               </div>
               <p className="leading-relaxed">
-                Payments are verified manually by our admin team. No credit card required. Fast activation.
+                Payments are verified manually by our admin team. Once you create your store account, our team activates Pro directly on your store.
               </p>
             </div>
           </div>
@@ -257,14 +261,14 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
           {/* Right Column: Interactive Upgrade Checkout Card */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-zinc-100">
             {submitted ? (
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div className="text-center space-y-2">
                   <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h2 className="text-2xl font-bold text-zinc-900">Upgrade Details Ready!</h2>
+                  <h2 className="text-2xl font-bold text-zinc-900">Payment Submitted!</h2>
                   <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mx-auto leading-relaxed">
-                    Your Pro request for <strong className="text-zinc-900">{storeName}</strong> has been prepared. Send it to WapDev on Messenger for instant verification.
+                    Pro request for <strong className="text-zinc-900">{storeName}</strong> is logged with GCash Ref <span className="font-mono font-bold text-emerald-700">#{refNumber}</span>.
                   </p>
                 </div>
 
@@ -272,9 +276,9 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                 <div className="bg-zinc-50 border border-dashed border-zinc-300 rounded-2xl p-4 sm:p-5 font-mono text-xs space-y-2.5">
                   <div className="flex items-center justify-between text-zinc-400 font-bold uppercase tracking-widest text-[10px] pb-2 border-b border-zinc-200">
                     <span className="flex items-center gap-1.5">
-                      <Receipt className="w-4 h-4 text-zinc-600" /> Auto-Generated Summary
+                      <Receipt className="w-4 h-4 text-zinc-600" /> Payment Summary
                     </span>
-                    <span className="text-emerald-600 font-bold">READY TO SEND</span>
+                    <span className="text-emerald-600 font-bold">READY TO VERIFY</span>
                   </div>
 
                   <div className="space-y-1.5 text-zinc-700 text-xs leading-relaxed pt-1">
@@ -287,22 +291,55 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-3 pt-2">
+                {/* REQUIRED STEP 3 FOR NEW USERS: Create Store Account */}
+                {!user ? (
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-500/30 rounded-2xl p-5 space-y-3.5 shadow-xs">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black">
+                        3
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-zinc-900 text-sm sm:text-base flex items-center gap-1.5">
+                          Required: Create Your Starter Store Account
+                        </h3>
+                        <p className="text-xs text-zinc-600 mt-0.5 leading-relaxed">
+                          Create your store account now so we can link your payment and instantly activate your Pro menu.
+                        </p>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={signupRedirectUrl}
+                      className="w-full min-h-[50px] py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                    >
+                      <UserPlus className="w-5 h-5" />
+                      Create Store Account & Claim Pro →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div className="text-xs text-emerald-900">
+                      <strong>Store Account Linked!</strong> Your logged-in store <strong className="text-zinc-900">({profile?.businessName || storeName})</strong> is in the verification queue.
+                    </div>
+                  </div>
+                )}
+
+                {/* Secondary Messenger & Copy Buttons */}
+                <div className="space-y-2.5 pt-1">
                   <button
                     type="button"
                     onClick={() => handleOpenMessenger(refNumber, storeName, ownerContact)}
-                    className="w-full min-h-[50px] py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[46px] py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                   >
-                    <MessageSquare className="w-5 h-5" />
-                    Send Details to WapDev Messenger
-                    <ArrowRight className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4 text-yellow-400" />
+                    Send Confirmation to WapDev Messenger
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleCopyUpgradeSummary(refNumber, storeName, ownerContact)}
-                    className="w-full min-h-[46px] py-3 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[42px] py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.98]"
                   >
                     {copiedSummary ? (
                       <>
@@ -312,24 +349,17 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     ) : (
                       <>
                         <Copy className="w-4 h-4" />
-                        Copy Details Summary
+                        Copy Summary Text
                       </>
                     )}
                   </button>
 
-                  {user ? (
+                  {user && (
                     <Link
                       to="/dashboard"
                       className="block text-center w-full py-2.5 text-xs font-bold text-zinc-500 hover:text-zinc-800 rounded-xl transition-colors"
                     >
                       Return to Dashboard
-                    </Link>
-                  ) : (
-                    <Link
-                      to={`/login?mode=signup&businessName=${encodeURIComponent(storeName)}`}
-                      className="block text-center w-full py-2.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 rounded-xl transition-colors"
-                    >
-                      Don't have a login yet? Create your store account here →
                     </Link>
                   )}
                 </div>
@@ -373,7 +403,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
                       <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-black">2</span>
-                      Step 2: Enter Store & Payment Reference
+                      Step 2: Enter Store & GCash Reference
                     </div>
 
                     <div>
@@ -393,7 +423,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
 
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                        Owner Email or Mobile Number
+                        Owner Email or Contact Number
                       </label>
                       <input
                         type="text"
@@ -432,23 +462,14 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                       disabled={submitting}
                       className="w-full min-h-[50px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm sm:text-base shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
-                      {submitting ? 'Preparing Details...' : 'Submit & Generate Upgrade Summary'}
+                      {submitting ? 'Verifying Details...' : 'Continue to Account Setup →'}
                       <Send className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleOpenMessenger(refNumber, storeName, ownerContact)}
-                      className="w-full min-h-[44px] py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98]"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
-                      Chat with WapDev Billing Support on Messenger
                     </button>
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-400 text-center pt-2">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    Instant auto-summary • 1-Click send to Messenger
+                    Step 1: GCash → Step 2: Reference # → Step 3: Create Account
                   </div>
                 </form>
               </div>

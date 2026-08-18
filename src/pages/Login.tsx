@@ -16,6 +16,7 @@ export default function Login() {
   const urlEmail = searchParams.get('email') || '';
   const urlBusinessName = searchParams.get('businessName') || searchParams.get('name') || '';
   const urlPlan = searchParams.get('plan') || '';
+  const urlPaymentRef = searchParams.get('paymentRef') || searchParams.get('refNumber') || '';
   const urlReturn = searchParams.get('returnUrl') || searchParams.get('ref') || '';
   const landingPageUrl = urlReturn || import.meta.env.VITE_LANDING_PAGE_URL || 'https://chatcart-home.wapdev.xyz';
 
@@ -66,12 +67,30 @@ export default function Login() {
       if (!profile) {
         const name = businessName.trim() || user.displayName || 'My Business';
         const cleanSlug = await generateUniqueSlug(name, user.uid);
-        await updateBusinessProfile(user.uid, {
+        const newProfileData: any = {
           businessName: name,
           slug: cleanSlug,
           messengerPageUsername: '',
-          status: 'pending',
+          email: user.email || '',
+          status: 'active',
+          plan: 'starter',
           createdAt: Date.now()
+        };
+
+        if (urlPaymentRef) {
+          newProfileData.planStatus = 'pending_payment';
+          newProfileData.paymentReference = urlPaymentRef.trim();
+          newProfileData.paymentDate = Date.now();
+          newProfileData.paymentAmount = 499;
+        }
+
+        await updateBusinessProfile(user.uid, newProfileData);
+      } else if (urlPaymentRef && !profile.paymentReference) {
+        await updateBusinessProfile(user.uid, {
+          planStatus: 'pending_payment',
+          paymentReference: urlPaymentRef.trim(),
+          paymentDate: Date.now(),
+          paymentAmount: 499
         });
       }
       navigate('/dashboard');
@@ -106,14 +125,26 @@ export default function Login() {
         try {
           const name = businessName.trim() || 'My Business';
           const cleanSlug = await generateUniqueSlug(name, user.uid);
-          // Initialize business profile with pending status
-          await updateBusinessProfile(user.uid, {
+          
+          const profileData: any = {
             businessName: name,
             slug: cleanSlug,
             messengerPageUsername: '',
-            status: 'pending',
+            email: user.email || email.trim(),
+            status: 'active',
+            plan: 'starter',
             createdAt: Date.now()
-          });
+          };
+
+          if (urlPaymentRef) {
+            profileData.planStatus = 'pending_payment';
+            profileData.paymentReference = urlPaymentRef.trim();
+            profileData.paymentDate = Date.now();
+            profileData.paymentAmount = 499;
+          }
+
+          // Initialize business profile
+          await updateBusinessProfile(user.uid, profileData);
         } catch (dbErr: any) {
           console.error("Firestore Error:", dbErr);
           if (dbErr.code === 'permission-denied') {

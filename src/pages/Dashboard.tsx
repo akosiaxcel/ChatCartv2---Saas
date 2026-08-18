@@ -368,34 +368,56 @@ export default function Dashboard() {
             </h2>
             <form onSubmit={handleSave} className="space-y-5">
               <div className="flex justify-center mb-6">
-                <div className="relative w-24 h-24 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group">
-                  {!isPro && (
-                    <div className="absolute top-1.5 right-1.5 z-10 bg-amber-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow-xs">
-                      PRO
-                    </div>
-                  )}
-                  {profile?.logoUrl ? (
-                    <img src={profile.logoUrl} alt="Store Logo" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
-                      <ImageIcon className="w-6 h-6 mb-1" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest">Logo</span>
-                    </div>
-                  )}
-                  <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
-                    <input 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*"
-                      disabled={uploading}
-                      onChange={handleLogoUpload}
-                    />
-                    {uploading ? (
-                      <Loader2 className="w-5 h-5 text-white animate-spin" />
-                    ) : (
-                      <Plus className="w-5 h-5 text-white" />
+                <div className="flex flex-col items-center">
+                  <div className="relative w-24 h-24 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group shadow-inner">
+                    {!isPro && (
+                      <div className="absolute top-1.5 right-1.5 z-10 bg-amber-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow-xs">
+                        PRO
+                      </div>
                     )}
-                  </label>
+                    {profile?.logoUrl ? (
+                      <img src={profile.logoUrl} alt="Store Logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
+                        <ImageIcon className="w-6 h-6 mb-1" />
+                        <span className="text-[8px] font-bold uppercase tracking-widest">Logo</span>
+                      </div>
+                    )}
+                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        disabled={uploading}
+                        onChange={handleLogoUpload}
+                      />
+                      {uploading ? (
+                        <Loader2 className="w-5 h-5 text-white animate-spin" />
+                      ) : (
+                        <Plus className="w-5 h-5 text-white" />
+                      )}
+                    </label>
+                  </div>
+                  {profile?.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setProfile({ ...profile, logoUrl: '' })}
+                      className="mt-1.5 text-[10px] font-bold text-red-500 uppercase hover:underline"
+                    >
+                      Remove Logo
+                    </button>
+                  )}
+                  {isPro && (
+                    <div className="w-full max-w-xs mt-2">
+                      <input
+                        type="url"
+                        placeholder="Or paste Logo URL (https://...)"
+                        value={profile?.logoUrl?.startsWith('data:') ? '' : (profile?.logoUrl || '')}
+                        onChange={(e) => setProfile({ ...profile!, logoUrl: e.target.value.trim() })}
+                        className="w-full text-[11px] px-3 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-hidden text-center"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
