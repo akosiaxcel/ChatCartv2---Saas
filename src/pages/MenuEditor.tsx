@@ -15,8 +15,10 @@ import { doc, collection } from 'firebase/firestore';
 import { uploadMenuImage } from '../firebase/storage';
 import AdminLayout from '../components/AdminLayout';
 import { Category, MenuItem, BusinessProfile } from '../types';
-import { Plus, Trash2, Edit2, Image as ImageIcon, Loader2, Save, X, Check, Clock, Eye, Shield } from 'lucide-react';
+import { Plus, Trash2, Edit2, Image as ImageIcon, Loader2, Save, X, Check, Clock, Eye, Shield, Sparkles } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { ProUpgradeModal } from '../components/ProUpgradeModal';
+import { PRICING_CONFIG } from '../lib/constants';
 
 export default function MenuEditor() {
   const { user } = useAuth();
@@ -31,8 +33,12 @@ export default function MenuEditor() {
   const [editingCategory, setEditingCategory] = useState<Partial<Category> | null>(null);
   const [editingItem, setEditingItem] = useState<Partial<MenuItem> | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState('');
 
   const isSuperAdmin = user?.email === 'axceljohnpatriarca@gmail.com';
+  const isPro = profile?.plan === 'pro' || isSuperAdmin;
+  const maxFreeItems = PRICING_CONFIG.starter.maxItems;
 
   useEffect(() => {
     if (user) {
@@ -65,6 +71,24 @@ export default function MenuEditor() {
     }
   };
 
+  const handleOpenAddItem = (categoryId: string) => {
+    // Spotify-style discovery limit check
+    if (!isPro && items.length >= maxFreeItems) {
+      setUpgradeReason(`You've discovered a Pro feature! You've reached the ${maxFreeItems}-dish limit on the Free Starter plan. Upgrade to Pro Business to add unlimited delicious items.`);
+      setIsUpgradeModalOpen(true);
+      return;
+    }
+
+    setEditingItem({ 
+      categoryId, 
+      name: '', 
+      price: 0, 
+      available: true,
+      isPopular: false,
+      description: ''
+    });
+  };
+
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !editingCategory || !editingCategory.name?.trim()) return;
@@ -79,6 +103,14 @@ export default function MenuEditor() {
   const handleSaveItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !editingItem || !editingItem.name?.trim()) return;
+
+    // Double check item limit on create
+    if (!editingItem.id && !isPro && items.length >= maxFreeItems) {
+      setUpgradeReason(`You've reached the ${maxFreeItems}-dish limit on Free Starter. Upgrade to Pro for unlimited items!`);
+      setIsUpgradeModalOpen(true);
+      return;
+    }
+
     await saveMenuItem(user.uid, {
       ...editingItem,
       name: editingItem.name.trim(),
@@ -154,7 +186,36 @@ export default function MenuEditor() {
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">Menu Editor</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">Menu Editor</h1>
+              {isPro ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold rounded-full">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  {items.length} items • Pro Unlimited
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpgradeReason("Upgrade to ChatCart Pro to unlock unlimited menu items!");
+                    setIsUpgradeModalOpen(true);
+                  }}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 border text-xs font-bold rounded-full transition-all hover:scale-[1.02]",
+                    items.length >= maxFreeItems 
+                      ? "bg-amber-50 border-amber-300 text-amber-900 shadow-xs" 
+                      : "bg-zinc-100 border-zinc-200 text-zinc-700"
+                  )}
+                >
+                  <span>{items.length} / {maxFreeItems} items</span>
+                  {items.length >= maxFreeItems ? (
+                    <span className="bg-amber-500 text-white text-[9px] px-1.5 py-0.2 rounded font-black uppercase">Limit reached</span>
+                  ) : (
+                    <span className="text-[10px] text-emerald-600 font-bold hover:underline">Upgrade</span>
+                  )}
+                </button>
+              )}
+            </div>
             <p className="text-zinc-500 text-sm md:text-base mt-1">Organize your categories, photos, and items</p>
           </div>
           
@@ -235,14 +296,7 @@ export default function MenuEditor() {
                         </button>
                       </div>
                       <button
-                        onClick={() => setEditingItem({ 
-                          categoryId: category.id, 
-                          name: '', 
-                          price: 0, 
-                          available: true,
-                          isPopular: false,
-                          description: ''
-                        })}
+                        onClick={() => handleOpenAddItem(category.id)}
                         className="bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -346,45 +400,62 @@ export default function MenuEditor() {
 
         {/* Category Modal */}
         {editingCategory && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
-            <div className="bg-white w-full max-w-md rounded-[28px] p-6 md:p-8 shadow-2xl my-auto animate-in zoom-in-95 duration-200">
-              <h2 className="text-xl font-bold mb-5">
-                {editingCategory.id ? 'Edit Category' : 'New Category'}
-              </h2>
-              <form onSubmit={handleSaveCategory} className="space-y-4">
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-950/60 backdrop-blur-xs animate-fade-in">
+            <div className="fixed inset-0" onClick={() => setEditingCategory(null)} />
+            
+            <div className="relative z-10 bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 sm:p-8 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+              {/* Mobile drag handle */}
+              <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto mb-4 sm:hidden shrink-0" />
+              
+              <div className="flex items-center justify-between mb-4 shrink-0">
+                <h2 className="text-xl font-bold text-zinc-900">
+                  {editingCategory.id ? 'Edit Category' : 'New Category'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setEditingCategory(null)}
+                  className="p-2 text-zinc-400 hover:text-zinc-700 rounded-full hover:bg-zinc-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveCategory} className="space-y-4 overflow-y-auto flex-1 overscroll-contain">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700">Category Name</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Category Name</label>
                   <input
                     type="text"
                     required
                     autoFocus
                     value={editingCategory.name || ''}
                     onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-medium"
+                    className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-medium transition-all"
                     placeholder="e.g. Coffee & Beverages"
                   />
                 </div>
+
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700">Category Icon (Emoji)</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Category Icon (Emoji)</label>
                   <input
                     type="text"
                     value={editingCategory.icon || ''}
                     onChange={(e) => setEditingCategory({ ...editingCategory, icon: e.target.value })}
-                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm"
+                    className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white text-base sm:text-sm transition-all"
                     placeholder="e.g. ☕ or 🍔"
                   />
                 </div>
+
                 <div className="flex gap-3 pt-3">
                   <button
                     type="button"
                     onClick={() => setEditingCategory(null)}
-                    className="flex-1 py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-50 rounded-xl"
+                    className="flex-1 min-h-[46px] py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-100 rounded-xl transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm"
+                    className="flex-1 min-h-[46px] bg-zinc-900 hover:bg-zinc-800 active:scale-[0.98] text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all"
                   >
                     Save Category
                   </button>
@@ -396,14 +467,30 @@ export default function MenuEditor() {
 
         {/* Item Modal */}
         {editingItem && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
-            <div className="bg-white w-full max-w-md rounded-[32px] p-6 md:p-8 shadow-2xl my-auto animate-in zoom-in-95 duration-200">
-              <h2 className="text-xl font-bold mb-5">
-                {editingItem.id ? 'Edit Item' : 'New Item'}
-              </h2>
-              <form onSubmit={handleSaveItem} className="space-y-4">
-                <div className="flex flex-col items-center mb-4">
-                  <div className="relative w-28 h-28 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group shadow-inner">
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-950/60 backdrop-blur-xs animate-fade-in">
+            <div className="fixed inset-0" onClick={() => setEditingItem(null)} />
+
+            <div className="relative z-10 bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+              
+              {/* Mobile drag handle */}
+              <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+
+              <div className="p-5 sm:p-6 pb-3 flex items-center justify-between border-b border-zinc-100 shrink-0">
+                <h2 className="text-lg sm:text-xl font-bold text-zinc-900">
+                  {editingItem.id ? 'Edit Dish / Item' : 'Add New Item'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="p-2 text-zinc-400 hover:text-zinc-700 rounded-full hover:bg-zinc-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveItem} className="p-5 sm:p-6 pt-3 space-y-4 overflow-y-auto overscroll-contain flex-1">
+                <div className="flex flex-col items-center mb-2">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group shadow-inner">
                     {editingItem.imageUrl ? (
                       <img src={editingItem.imageUrl} alt="Item" className="w-full h-full object-cover" />
                     ) : (
@@ -429,8 +516,8 @@ export default function MenuEditor() {
                       ) : (
                         <>
                           <Plus className="w-5 h-5 text-white mb-0.5" />
-                          <span className="text-[8px] font-bold text-white uppercase tracking-wider">
-                            Upload
+                          <span className="text-[9px] font-bold text-white uppercase tracking-wider">
+                            Upload Photo
                           </span>
                         </>
                       )}
@@ -440,7 +527,7 @@ export default function MenuEditor() {
                     <button
                       type="button"
                       onClick={() => setEditingItem({ ...editingItem, imageUrl: '' })}
-                      className="mt-2 text-[10px] font-bold text-red-500 uppercase hover:underline"
+                      className="mt-1.5 text-[10px] font-bold text-red-500 uppercase hover:underline"
                     >
                       Remove Photo
                     </button>
@@ -448,19 +535,19 @@ export default function MenuEditor() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Item Name</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Item Name</label>
                   <input
                     type="text"
                     required
                     value={editingItem.name || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-medium"
+                    className="w-full min-h-[46px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-medium transition-all"
                     placeholder="e.g. Classic Cheeseburger"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Price (₱)</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Price (₱)</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-sm">₱</span>
                     <input
@@ -470,34 +557,48 @@ export default function MenuEditor() {
                       required
                       value={editingItem.price === undefined || isNaN(editingItem.price) ? '' : editingItem.price}
                       onChange={(e) => setEditingItem({ ...editingItem, price: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-                      className="w-full pl-8 pr-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-mono"
+                      className="w-full min-h-[46px] pl-8 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-mono transition-all"
                       placeholder="0.00"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Description</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Description</label>
                   <textarea
                     value={editingItem.description || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 h-20 resize-none text-xs leading-relaxed"
+                    className="w-full min-h-[70px] px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white h-20 resize-none text-xs leading-relaxed transition-all"
                     placeholder="e.g. Grilled beef patty, melted cheddar, lettuce, special sauce"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-1">
-                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-100">
-                    <input
-                      type="checkbox"
-                      checked={!!editingItem.isPopular}
-                      onChange={(e) => setEditingItem({ ...editingItem, isPopular: e.target.checked })}
-                      className="w-4 h-4 rounded text-red-600 focus:ring-red-500"
-                    />
-                    <span className="text-xs font-bold text-zinc-700">Popular Item</span>
+                  <label className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-200 rounded-xl cursor-pointer hover:bg-zinc-100 min-h-[46px]">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={!!editingItem.isPopular}
+                        onChange={(e) => {
+                          if (!isPro && e.target.checked) {
+                            setUpgradeReason("Bestseller & 'Popular' highlighting is a Pro feature. Upgrade to Pro Business to highlight top-selling items!");
+                            setIsUpgradeModalOpen(true);
+                            return;
+                          }
+                          setEditingItem({ ...editingItem, isPopular: e.target.checked });
+                        }}
+                        className="w-4 h-4 rounded text-red-600 focus:ring-red-500"
+                      />
+                      <span className="text-xs font-bold text-zinc-700">Popular</span>
+                    </div>
+                    {!isPro && (
+                      <span className="text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                        PRO
+                      </span>
+                    )}
                   </label>
 
-                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-100">
+                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border border-zinc-200 rounded-xl cursor-pointer hover:bg-zinc-100 min-h-[46px]">
                     <input
                       type="checkbox"
                       checked={editingItem.available !== false}
@@ -508,17 +609,17 @@ export default function MenuEditor() {
                   </label>
                 </div>
 
-                <div className="flex gap-3 pt-3">
+                <div className="flex gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setEditingItem(null)}
-                    className="flex-1 py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-50 rounded-xl"
+                    className="flex-1 min-h-[46px] py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-100 rounded-xl transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm shadow-md"
+                    className="flex-1 min-h-[46px] bg-zinc-900 hover:bg-zinc-800 active:scale-[0.98] text-white py-3 rounded-xl font-bold text-sm shadow-md transition-all"
                   >
                     Save Item
                   </button>
@@ -527,6 +628,17 @@ export default function MenuEditor() {
             </div>
           </div>
         )}
+
+        {/* Pro Upgrade Modal */}
+        <ProUpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+          profile={profile}
+          featureReason={upgradeReason}
+          onSuccess={() => {
+            if (profile) setProfile({ ...profile, plan: 'pro', planStatus: 'pending_payment' });
+          }}
+        />
       </div>
     </AdminLayout>
   );

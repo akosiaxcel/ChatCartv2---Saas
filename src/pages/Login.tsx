@@ -136,11 +136,11 @@ export default function Login() {
       {/* Landing page link / Back button */}
       <div className="w-full max-w-md mb-4 flex items-center justify-between">
         <Link
-          to="/demo"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 transition-colors shadow-2xs"
+          to="/upgrade"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-full border border-emerald-200/60 transition-colors shadow-2xs"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          View Live Demo Menu
+          <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+          Go Pro (₱499/mo)
         </Link>
         
         <a

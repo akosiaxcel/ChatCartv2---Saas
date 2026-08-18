@@ -3,12 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { getBusinessProfile, updateBusinessProfile, generateUniqueSlug } from '../firebase/firestore';
 import AdminLayout from '../components/AdminLayout';
 import { BusinessProfile } from '../types';
-import { Store, MessageCircle, Save, Loader2, ExternalLink, Clock, XCircle, Download, QrCode, Info, CheckCircle2, Circle, ArrowRight, Sparkles, Image as ImageIcon, Plus, Copy, Check, Globe, Shield } from 'lucide-react';
+import { Store, MessageCircle, Save, Loader2, ExternalLink, Clock, XCircle, Download, QrCode, Info, CheckCircle2, Circle, ArrowRight, Sparkles, Image as ImageIcon, Plus, Copy, Check, Globe, Shield, CreditCard } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import { getCategories, getMenuItems } from '../firebase/firestore';
 import { uploadLogo } from '../firebase/storage';
 import { Category, MenuItem, cn } from '../types';
+import { ProUpgradeModal } from '../components/ProUpgradeModal';
+import { PRICING_CONFIG, PAYMENT_CONFIG } from '../lib/constants';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -24,8 +26,11 @@ export default function Dashboard() {
   const [message, setMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState('');
 
   const isSuperAdmin = user?.email === 'axceljohnpatriarca@gmail.com';
+  const isPro = profile?.plan === 'pro' || isSuperAdmin;
 
   const menuUrl = profile?.slug 
     ? `${window.location.origin}/${profile.slug}`
@@ -151,6 +156,14 @@ export default function Dashboard() {
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!user || !e.target.files?.[0] || !profile) return;
+    
+    // Spotify-style discovery lock on logo upload
+    if (!isPro) {
+      setUpgradeReason("Custom Restaurant Logo & Branding is a Pro feature. Upgrade to Pro Business to display your official logo on menus and QR codes!");
+      setIsUpgradeModalOpen(true);
+      return;
+    }
+
     setUploading(true);
     setMessage('');
     setErrorMessage('');
@@ -253,10 +266,30 @@ export default function Dashboard() {
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-zinc-900 tracking-tight flex items-center gap-3">
-              Welcome, {profile?.businessName || 'Partner'}!
-              {!isSetupComplete && <Sparkles className="w-6 h-6 text-amber-500 animate-pulse" />}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-zinc-900 tracking-tight flex items-center gap-3">
+                Welcome, {profile?.businessName || 'Partner'}!
+                {!isSetupComplete && <Sparkles className="w-6 h-6 text-amber-500 animate-pulse" />}
+              </h1>
+              {isPro ? (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold rounded-full">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  Pro Business
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpgradeReason("Upgrade to ChatCart Pro for unlimited items, custom logo branding, and priority support!");
+                    setIsUpgradeModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-zinc-900 text-white text-xs font-bold rounded-full hover:bg-zinc-800 transition-all shadow-xs"
+                >
+                  <span>Free Starter (15 items)</span>
+                  <span className="text-emerald-400 text-[10px] uppercase font-black tracking-wider">Upgrade ⭐</span>
+                </button>
+              )}
+            </div>
             <p className="text-zinc-500 mt-1">
               {isSetupComplete 
                 ? "Your digital menu is live and ready for customers." 
@@ -336,6 +369,11 @@ export default function Dashboard() {
             <form onSubmit={handleSave} className="space-y-5">
               <div className="flex justify-center mb-6">
                 <div className="relative w-24 h-24 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group">
+                  {!isPro && (
+                    <div className="absolute top-1.5 right-1.5 z-10 bg-amber-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow-xs">
+                      PRO
+                    </div>
+                  )}
                   {profile?.logoUrl ? (
                     <img src={profile.logoUrl} alt="Store Logo" className="w-full h-full object-cover" />
                   ) : (
@@ -522,6 +560,17 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Pro Upgrade Modal */}
+      <ProUpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        profile={profile}
+        featureReason={upgradeReason}
+        onSuccess={() => {
+          if (profile) setProfile({ ...profile, plan: 'pro', planStatus: 'pending_payment' });
+        }}
+      />
     </AdminLayout>
   );
 }

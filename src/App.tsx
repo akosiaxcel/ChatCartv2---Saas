@@ -12,6 +12,8 @@ import MenuEditor from './pages/MenuEditor';
 import PublicMenu from './pages/PublicMenu';
 import SuperAdmin from './pages/SuperAdmin';
 import AdminLogin from './pages/AdminLogin';
+import UpgradePage from './pages/UpgradePage';
+import { FloatingSupportButton } from './components/FloatingSupportButton';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -26,6 +28,8 @@ export default function App() {
         <Routes>
           {/* Static Public Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/upgrade" element={<UpgradePage />} />
+          <Route path="/pro" element={<UpgradePage />} />
           <Route path="/superadmin" element={<AdminLogin />} />
           
           {/* Legacy/Direct Public Routes */}
@@ -66,8 +70,10 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
+
+        {/* Global Floating Support Bubble */}
+        <FloatingSupportButton />
       </Router>
     </AuthProvider>
   );
 }
-

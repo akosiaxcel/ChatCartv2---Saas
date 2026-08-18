@@ -11,7 +11,16 @@ export interface BusinessProfile {
   slug: string;
   messengerPageUsername: string;
   logoUrl?: string;
+  email?: string;
   status: 'pending' | 'active' | 'rejected';
+  plan?: 'starter' | 'pro';
+  planStatus?: 'active' | 'pending_payment' | 'grace_period' | 'expired';
+  paymentReference?: string;
+  paymentDate?: number;
+  paymentAmount?: number;
+  proStartedAt?: number;
+  proExpiresAt?: number;
+  proNotes?: string;
   createdAt: number;
 }
 
