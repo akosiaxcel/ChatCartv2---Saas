@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "YOUR_FIREBASE_PROJECT_ID"
-  }
+    "default": "YOUR_FIREBASE_PROJECT_ID",
+    "chatcart sass": "chatcart-2026"
+  },
+  "targets": {},
+  "etags": {}
 }
