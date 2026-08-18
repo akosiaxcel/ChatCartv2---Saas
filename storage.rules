@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if caller is super admin
+    function isSuperAdmin() {
+      return request.auth != null && request.auth.token.email == 'axceljohnpatriarca@gmail.com';
+    }
+
+    // Menu Item & Logo Images
+    match /{allPaths=**} {
+      // Anyone can view product images & logos
+      allow read: if true;
+      // Authenticated users or super admins can upload images under 10MB
+      allow write: if request.auth != null &&
+        (request.resource == null || request.resource.size < 10 * 1024 * 1024);
+    }
+  }
+}

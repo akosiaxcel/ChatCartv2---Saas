@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if caller is super admin
+    function isSuperAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'axceljohnpatriarca@gmail.com' ||
+         request.auth.token.email == 'axceljohnpatriarca@gmail.com');
+    }
+
+    // Helper function to check if caller owns the document
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users / Business Profiles
+    match /users/{userId} {
+      // Anyone can read business profiles (for public menus & slug lookup)
+      allow read: if true;
+      
+      // Store owners can create and update their own profile; Super admin has full control
+      allow create, update: if isOwner(userId) || isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // Menus (Categories and Items)
+    match /menus/{userId} {
+      allow read: if true;
+
+      match /categories/{categoryId} {
+        // Public can read menu categories
+        allow read: if true;
+        // Only the store owner or super admin can create, edit, or delete categories
+        allow write: if isOwner(userId) || isSuperAdmin();
+      }
+
+      match /items/{itemId} {
+        // Public can view dishes
+        allow read: if true;
+        // Only the store owner or super admin can create, edit, or delete dishes
+        allow write: if isOwner(userId) || isSuperAdmin();
+      }
+    }
+  }
+}
