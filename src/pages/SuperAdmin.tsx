@@ -28,7 +28,11 @@ import {
   CheckCircle2,
   CalendarCheck,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  UserCheck,
+  UserX,
+  Edit3,
+  Plus
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -36,6 +40,13 @@ import { PAYMENT_CONFIG, PRICING_CONFIG } from '../lib/constants';
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
+
+interface EditRefModalData {
+  uid: string;
+  businessName: string;
+  refNumber: string;
+  amount: number;
+}
 
 export default function SuperAdmin() {
   const { user } = useAuth();
@@ -45,6 +56,7 @@ export default function SuperAdmin() {
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [deletingBiz, setDeletingBiz] = useState<BusinessProfile | null>(null);
+  const [editingRefBiz, setEditingRefBiz] = useState<EditRefModalData | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'pending_payment' | 'pro' | 'grace_period' | 'overdue' | 'starter'>('all');
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
@@ -67,7 +79,7 @@ export default function SuperAdmin() {
         return {
           ...data,
           uid: doc.id,
-          status: data.status || 'active',
+          status: data.status || 'pending',
           plan: data.plan || 'starter',
           planStatus: data.planStatus || 'active',
           proStartedAt: data.proStartedAt || (data.plan === 'pro' ? (data.createdAt || Date.now()) : undefined),
@@ -78,7 +90,7 @@ export default function SuperAdmin() {
         };
       });
       
-      // Sort: Pending GCash references first, then pending store approvals, then newest
+      // Sort: Pending GCash references first, then pending store signups, then newest
       list.sort((a, b) => {
         if (a.planStatus === 'pending_payment' && b.planStatus !== 'pending_payment') return -1;
         if (a.planStatus !== 'pending_payment' && b.planStatus === 'pending_payment') return 1;
@@ -185,6 +197,74 @@ export default function SuperAdmin() {
     }
   };
 
+  // Save / Update GCash Reference Manually
+  const handleSaveGcashRef = async (activateProDirectly: boolean) => {
+    if (!editingRefBiz) return;
+    const { uid, businessName, refNumber, amount } = editingRefBiz;
+    const now = Date.now();
+
+    setActionLoading(prev => ({ ...prev, [uid]: true }));
+    setError(null);
+    try {
+      const updateData: Partial<BusinessProfile> = {
+        paymentReference: refNumber.trim(),
+        paymentAmount: amount || 499,
+        paymentDate: now
+      };
+
+      if (activateProDirectly) {
+        updateData.plan = 'pro';
+        updateData.planStatus = 'active';
+        updateData.status = 'active';
+        updateData.proStartedAt = now;
+      } else {
+        updateData.planStatus = 'pending_payment';
+      }
+
+      await updateBusinessProfile(uid, updateData);
+
+      setSuccessMessage(
+        activateProDirectly
+          ? `GCash Ref #${refNumber.trim()} attached & Pro activated for ${businessName}!`
+          : `GCash Ref #${refNumber.trim()} saved for ${businessName}.`
+      );
+      setTimeout(() => setSuccessMessage(null), 3500);
+
+      setBusinesses(prev => prev.map(b => b.uid === uid ? {
+        ...b,
+        paymentReference: refNumber.trim(),
+        paymentAmount: amount || 499,
+        paymentDate: now,
+        ...(activateProDirectly ? { plan: 'pro', planStatus: 'active', status: 'active', proStartedAt: now } : { planStatus: 'pending_payment' })
+      } : b));
+
+      setEditingRefBiz(null);
+    } catch (err: any) {
+      console.error("Save Ref error:", err);
+      setError(`Failed to save reference: ${err.message}`);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [uid]: false }));
+    }
+  };
+
+  // Store status change (active / rejected)
+  const handleStatusChange = async (uid: string, status: 'active' | 'rejected') => {
+    setActionLoading(prev => ({ ...prev, [uid]: true }));
+    setSuccessMessage(null);
+    setError(null);
+    try {
+      await setBusinessStatus(uid, status);
+      setSuccessMessage(`Store marked as ${status.toUpperCase()} successfully.`);
+      setTimeout(() => setSuccessMessage(null), 3000);
+      setBusinesses(prev => prev.map(b => b.uid === uid ? { ...b, status } : b));
+    } catch (err: any) {
+      console.error("Action Error:", err);
+      setError(`Failed to update status: ${err.message}`);
+    } finally {
+      setActionLoading(prev => ({ ...prev, [uid]: false }));
+    }
+  };
+
   // Update Pro Upgrade Date manually
   const handleUpdateUpgradeDate = async (biz: BusinessProfile, newDateStr: string) => {
     if (!newDateStr) return;
@@ -279,24 +359,6 @@ WapDev ChatCart Billing Support
     }
   };
 
-  // Store status change (active / rejected)
-  const handleStatusChange = async (uid: string, status: 'active' | 'rejected') => {
-    setActionLoading(prev => ({ ...prev, [uid]: true }));
-    setSuccessMessage(null);
-    setError(null);
-    try {
-      await setBusinessStatus(uid, status);
-      setSuccessMessage(`Business marked as ${status.toUpperCase()} successfully.`);
-      setTimeout(() => setSuccessMessage(null), 3000);
-      setBusinesses(prev => prev.map(b => b.uid === uid ? { ...b, status } : b));
-    } catch (err: any) {
-      console.error("Action Error:", err);
-      setError(`Failed to update status: ${err.message}`);
-    } finally {
-      setActionLoading(prev => ({ ...prev, [uid]: false }));
-    }
-  };
-
   const confirmDelete = async () => {
     if (!deletingBiz) return;
     const uid = deletingBiz.uid;
@@ -355,7 +417,8 @@ WapDev ChatCart Billing Support
         const matchesUsername = (b.messengerPageUsername || '').toLowerCase().includes(query);
         const matchesSlug = (b.slug || '').toLowerCase().includes(query);
         const matchesRef = (b.paymentReference || '').toLowerCase().includes(query);
-        return matchesName || matchesUid || matchesUsername || matchesSlug || matchesRef;
+        const matchesEmail = (b.email || '').toLowerCase().includes(query);
+        return matchesName || matchesUid || matchesUsername || matchesSlug || matchesRef || matchesEmail;
       }
       return true;
     });
@@ -369,10 +432,10 @@ WapDev ChatCart Billing Support
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight flex items-center gap-2">
               <Shield className="w-7 h-7 text-emerald-500" />
-              Platform Overview & Billing
+              Platform Overview & Approvals
             </h1>
             <p className="text-zinc-500 text-xs sm:text-sm mt-1">
-              Manual approval queue, 1-click Pro toggles, subscription date records & 5-day grace period notices.
+              Approve merchant signups, attach/review GCash references, toggle Pro access & manage billing.
             </p>
           </div>
           
@@ -386,8 +449,35 @@ WapDev ChatCart Billing Support
           </button>
         </div>
 
-        {/* Metric Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Pending Signups Alert Banner if pending > 0 */}
+        {pendingCount > 0 && (
+          <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 rounded-2xl p-4 sm:p-5 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <AlertCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm sm:text-base">
+                  {pendingCount} New Store Registration{pendingCount > 1 ? 's' : ''} Awaiting Sign Up Approval
+                </h3>
+                <p className="text-xs text-amber-100 mt-0.5">
+                  Review and activate these merchants so their public menu and dashboard go live.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('pending')}
+              className="px-4 py-2.5 bg-white text-zinc-900 hover:bg-amber-50 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xs shrink-0"
+            >
+              Review Pending ({pendingCount})
+            </button>
+          </div>
+        )}
+
+        {/* Metric Cards (5 Cards) */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+          {/* Total Stores */}
           <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-2xs space-y-1">
             <div className="flex items-center justify-between text-zinc-400">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Total Stores</span>
@@ -397,30 +487,43 @@ WapDev ChatCart Billing Support
             <p className="text-[10px] sm:text-[11px] text-zinc-400">Registered merchants</p>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 sm:p-5 rounded-2xl text-white shadow-md space-y-1">
-            <div className="flex items-center justify-between text-amber-100">
-              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Pro Stores</span>
-              <Sparkles className="w-4 h-4 text-yellow-200 fill-yellow-200" />
+          {/* Pending Signups Approval */}
+          <div className="bg-amber-50/80 p-4 sm:p-5 rounded-2xl border border-amber-200 shadow-2xs space-y-1">
+            <div className="flex items-center justify-between text-amber-700">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Pending Signups</span>
+              <UserCheck className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="text-2xl sm:text-3xl font-black">{proCount}</div>
-            <p className="text-[10px] sm:text-[11px] text-amber-100 font-medium">₱{estimatedMRR.toLocaleString()} / mo MRR</p>
+            <div className="text-2xl sm:text-3xl font-black text-amber-900">{pendingCount}</div>
+            <p className="text-[10px] sm:text-[11px] text-amber-700 font-medium">Awaiting store approval</p>
           </div>
 
+          {/* GCash Unverified */}
           <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-2xs space-y-1">
             <div className="flex items-center justify-between text-zinc-400">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">GCash Unverified</span>
               <CreditCard className="w-4 h-4 text-blue-500" />
             </div>
             <div className="text-2xl sm:text-3xl font-black text-blue-600">{pendingPaymentCount}</div>
-            <p className="text-[10px] sm:text-[11px] text-zinc-400">Manual review needed</p>
+            <p className="text-[10px] sm:text-[11px] text-zinc-400">GCash Ref review needed</p>
           </div>
 
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-2xs space-y-1">
+          {/* Pro Stores */}
+          <div className="bg-gradient-to-br from-emerald-600 to-teal-700 p-4 sm:p-5 rounded-2xl text-white shadow-md space-y-1">
+            <div className="flex items-center justify-between text-emerald-100">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Pro Stores</span>
+              <Sparkles className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-black">{proCount}</div>
+            <p className="text-[10px] sm:text-[11px] text-emerald-100 font-medium">₱{estimatedMRR.toLocaleString()} / mo MRR</p>
+          </div>
+
+          {/* Grace / Overdue */}
+          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-100 shadow-2xs space-y-1 col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between text-zinc-400">
               <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Grace / Overdue</span>
-              <AlertCircle className="w-4 h-4 text-amber-500" />
+              <AlertCircle className="w-4 h-4 text-rose-500" />
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-amber-600">
+            <div className="text-2xl sm:text-3xl font-black text-rose-600">
               {gracePeriodCount + overdueCount}
             </div>
             <p className="text-[10px] sm:text-[11px] text-zinc-400">
@@ -428,6 +531,87 @@ WapDev ChatCart Billing Support
             </p>
           </div>
         </div>
+
+        {/* Add / Edit GCash Reference Modal */}
+        {editingRefBiz && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-950/60 backdrop-blur-xs animate-fade-in">
+            <div className="fixed inset-0" onClick={() => setEditingRefBiz(null)} />
+            
+            <div className="relative z-10 bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 sm:p-7 shadow-2xl space-y-5 animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+              <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto sm:hidden shrink-0 mb-1" />
+              
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-zinc-900">Manage GCash Reference</h3>
+                  <p className="text-xs text-zinc-500">{editingRefBiz.businessName}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3.5">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
+                    GCash Reference Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 1029 3847 5610"
+                    value={editingRefBiz.refNumber}
+                    onChange={(e) => setEditingRefBiz({ ...editingRefBiz, refNumber: e.target.value })}
+                    className="w-full min-h-[46px] px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm font-mono font-bold text-zinc-900 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  />
+                  <p className="text-[10px] text-zinc-400 mt-1">
+                    Enter the GCash transaction reference sent via Messenger or SMS.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
+                    Amount (₱)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingRefBiz.amount}
+                    onChange={(e) => setEditingRefBiz({ ...editingRefBiz, amount: Number(e.target.value) || 499 })}
+                    className="w-full min-h-[46px] px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm font-mono font-bold text-zinc-900 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <button
+                  type="button"
+                  disabled={!editingRefBiz.refNumber.trim() || actionLoading[editingRefBiz.uid]}
+                  onClick={() => handleSaveGcashRef(true)}
+                  className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300 fill-amber-300" />
+                  Save & Activate Pro (₱499 / 30 Days)
+                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingRefBiz(null)}
+                    className="flex-1 min-h-[42px] py-2.5 rounded-xl border border-zinc-200 font-bold text-xs text-zinc-600 hover:bg-zinc-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!editingRefBiz.refNumber.trim() || actionLoading[editingRefBiz.uid]}
+                    onClick={() => handleSaveGcashRef(false)}
+                    className="flex-1 min-h-[42px] py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 disabled:opacity-50 font-bold text-xs text-zinc-800 transition-colors"
+                  >
+                    Save Ref Only
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Delete Confirmation Modal */}
         {deletingBiz && (
@@ -486,9 +670,10 @@ WapDev ChatCart Billing Support
         {/* Filter and Search Bar */}
         <div className="bg-white p-4 rounded-2xl border border-zinc-100 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {(['all', 'pending_payment', 'grace_period', 'overdue', 'pro', 'starter'] as const).map(tab => {
+            {(['all', 'pending', 'pending_payment', 'grace_period', 'overdue', 'pro', 'starter'] as const).map(tab => {
               const labelMap: Record<string, string> = {
                 all: 'All',
+                pending: `Pending Signups (${pendingCount})`,
                 pending_payment: `GCash Review (${pendingPaymentCount})`,
                 grace_period: `Grace Period (${gracePeriodCount})`,
                 overdue: `Overdue (${overdueCount})`,
@@ -503,7 +688,9 @@ WapDev ChatCart Billing Support
                     "px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                     statusFilter === tab
                       ? "bg-zinc-900 text-white shadow-xs"
-                      : "bg-zinc-50 text-zinc-500 hover:bg-zinc-100"
+                      : "bg-zinc-50 text-zinc-500 hover:bg-zinc-100",
+                    tab === 'pending' && pendingCount > 0 && statusFilter !== 'pending' && "text-amber-700 bg-amber-50 font-black",
+                    tab === 'pending_payment' && pendingPaymentCount > 0 && statusFilter !== 'pending_payment' && "text-blue-700 bg-blue-50 font-black"
                   )}
                 >
                   {labelMap[tab]}
@@ -516,7 +703,7 @@ WapDev ChatCart Billing Support
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search store, GCash ref, handles..."
+              placeholder="Search store, email, GCash ref..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full min-h-[42px] pl-10 pr-4 py-2 bg-zinc-50 border border-zinc-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
@@ -549,6 +736,7 @@ WapDev ChatCart Billing Support
               {filteredBusinesses.map((biz) => {
                 const publicUrl = biz.slug ? `/${biz.slug}` : `/menu/${biz.uid}`;
                 const isBizPro = biz.plan === 'pro';
+                const isPendingStoreApproval = biz.status === 'pending';
                 const hasPendingPayment = biz.planStatus === 'pending_payment';
                 const billing = getBillingStatus(biz);
                 const isExpanded = expandedBilling[biz.uid] || false;
@@ -566,7 +754,10 @@ WapDev ChatCart Billing Support
                   : 'N/A';
 
                 return (
-                  <div key={biz.uid} className="p-4 sm:p-6 hover:bg-zinc-50/70 transition-colors space-y-3.5">
+                  <div key={biz.uid} className={cn(
+                    "p-4 sm:p-6 transition-colors space-y-3.5",
+                    isPendingStoreApproval ? "bg-amber-50/30 hover:bg-amber-50/50" : "hover:bg-zinc-50/70"
+                  )}>
                     {/* Top Row: Store Details & Interactive Toggle Pill */}
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       
@@ -579,10 +770,10 @@ WapDev ChatCart Billing Support
                           <span className={cn(
                             "text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border",
                             biz.status === 'active' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                            biz.status === 'pending' ? "bg-amber-50 text-amber-700 border-amber-200 animate-pulse" :
+                            biz.status === 'pending' ? "bg-amber-100 text-amber-800 border-amber-300 font-black animate-pulse" :
                             "bg-red-50 text-red-700 border-red-200"
                           )}>
-                            {biz.status}
+                            {biz.status === 'pending' ? 'Pending Approval' : biz.status}
                           </span>
 
                           {/* Billing Status Badge */}
@@ -606,6 +797,7 @@ WapDev ChatCart Billing Support
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500">
+                          {biz.email && <p>Owner Email: <span className="font-medium text-zinc-800">{biz.email}</span></p>}
                           <p>Messenger: <span className="font-mono text-zinc-800 font-medium">@{biz.messengerPageUsername || 'not set'}</span></p>
                           <p className="text-[11px] text-zinc-400 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
@@ -615,8 +807,45 @@ WapDev ChatCart Billing Support
                         </div>
                       </div>
 
-                      {/* Right Action Controls: Toggle Pill & Quick Actions */}
+                      {/* Right Action Controls: Approval buttons, Toggle Pill & Quick Actions */}
                       <div className="flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0">
+                        
+                        {/* Pending Sign Up Action Buttons */}
+                        {isPendingStoreApproval && (
+                          <div className="flex items-center gap-2 bg-amber-100/70 p-1.5 rounded-2xl border border-amber-300">
+                            <button
+                              type="button"
+                              disabled={actionLoading[biz.uid]}
+                              onClick={() => handleStatusChange(biz.uid, 'active')}
+                              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 active:scale-95"
+                            >
+                              <UserCheck className="w-3.5 h-3.5" />
+                              Approve Store
+                            </button>
+                            <button
+                              type="button"
+                              disabled={actionLoading[biz.uid]}
+                              onClick={() => handleStatusChange(biz.uid, 'rejected')}
+                              className="px-2.5 py-1.5 bg-zinc-200 hover:bg-red-100 hover:text-red-700 text-zinc-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                            >
+                              <UserX className="w-3.5 h-3.5" />
+                              Reject
+                            </button>
+                          </div>
+                        )}
+
+                        {biz.status === 'rejected' && (
+                          <button
+                            type="button"
+                            disabled={actionLoading[biz.uid]}
+                            onClick={() => handleStatusChange(biz.uid, 'active')}
+                            className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                          >
+                            <UserCheck className="w-3.5 h-3.5" />
+                            Re-Activate
+                          </button>
+                        )}
+
                         {/* Interactive Pro / Starter Toggle Switch Pill */}
                         <div className="flex items-center bg-zinc-100 p-1 rounded-2xl border border-zinc-200 shadow-2xs">
                           <button
@@ -683,8 +912,8 @@ WapDev ChatCart Billing Support
                       </div>
                     </div>
 
-                    {/* GCash Verification Box (if merchant submitted GCash ref) */}
-                    {biz.paymentReference && (
+                    {/* GCash Verification Box */}
+                    {biz.paymentReference ? (
                       <div className={cn(
                         "p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs",
                         hasPendingPayment 
@@ -702,6 +931,20 @@ WapDev ChatCart Billing Support
                           >
                             {copiedRef === biz.paymentReference ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
+
+                          {/* Edit Ref Button */}
+                          <button
+                            type="button"
+                            onClick={() => setEditingRefBiz({
+                              uid: biz.uid,
+                              businessName: biz.businessName,
+                              refNumber: biz.paymentReference || '',
+                              amount: biz.paymentAmount || 499
+                            })}
+                            className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 underline flex items-center gap-1 ml-1"
+                          >
+                            <Edit3 className="w-3 h-3" /> Edit Ref
+                          </button>
                         </div>
 
                         {hasPendingPayment && (
@@ -715,6 +958,26 @@ WapDev ChatCart Billing Support
                             </button>
                           </div>
                         )}
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-zinc-50 border border-dashed border-zinc-200 rounded-2xl flex items-center justify-between gap-3 text-xs text-zinc-500">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-3.5 h-3.5 text-zinc-400" />
+                          <span>No GCash reference attached yet.</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEditingRefBiz({
+                            uid: biz.uid,
+                            businessName: biz.businessName,
+                            refNumber: '',
+                            amount: 499
+                          })}
+                          className="px-3 py-1.5 bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-bold rounded-xl text-xs transition-all flex items-center gap-1 shadow-2xs"
+                        >
+                          <Plus className="w-3.5 h-3.5 text-emerald-600" />
+                          Add GCash Ref #
+                        </button>
                       </div>
                     )}
 

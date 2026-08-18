@@ -4,7 +4,7 @@ import { auth } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { updateBusinessProfile, getBusinessProfile, generateUniqueSlug } from '../firebase/firestore';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Loader2, Store, ArrowLeft, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Store, ArrowLeft, Sparkles, CreditCard } from 'lucide-react';
 import { Logo } from '../components/Logo';
 
 export default function Login() {
@@ -24,6 +24,7 @@ export default function Login() {
   const [email, setEmail] = useState(urlEmail);
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState(urlBusinessName);
+  const [gcashRef, setGcashRef] = useState(urlPaymentRef);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -46,7 +47,8 @@ export default function Login() {
     }
     if (urlEmail) setEmail(urlEmail);
     if (urlBusinessName) setBusinessName(urlBusinessName);
-  }, [urlMode, urlEmail, urlBusinessName]);
+    if (urlPaymentRef) setGcashRef(urlPaymentRef);
+  }, [urlMode, urlEmail, urlBusinessName, urlPaymentRef]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -62,6 +64,8 @@ export default function Login() {
         return;
       }
 
+      const activeRef = (gcashRef || urlPaymentRef || '').trim();
+
       // Check if profile exists, if not initialize it
       const profile = await getBusinessProfile(user.uid);
       if (!profile) {
@@ -72,23 +76,23 @@ export default function Login() {
           slug: cleanSlug,
           messengerPageUsername: '',
           email: user.email || '',
-          status: 'active',
+          status: 'pending',
           plan: 'starter',
           createdAt: Date.now()
         };
 
-        if (urlPaymentRef) {
+        if (activeRef) {
           newProfileData.planStatus = 'pending_payment';
-          newProfileData.paymentReference = urlPaymentRef.trim();
+          newProfileData.paymentReference = activeRef;
           newProfileData.paymentDate = Date.now();
           newProfileData.paymentAmount = 499;
         }
 
         await updateBusinessProfile(user.uid, newProfileData);
-      } else if (urlPaymentRef && !profile.paymentReference) {
+      } else if (activeRef && !profile.paymentReference) {
         await updateBusinessProfile(user.uid, {
           planStatus: 'pending_payment',
-          paymentReference: urlPaymentRef.trim(),
+          paymentReference: activeRef,
           paymentDate: Date.now(),
           paymentAmount: 499
         });
@@ -125,20 +129,21 @@ export default function Login() {
         try {
           const name = businessName.trim() || 'My Business';
           const cleanSlug = await generateUniqueSlug(name, user.uid);
+          const activeRef = (gcashRef || urlPaymentRef || '').trim();
           
           const profileData: any = {
             businessName: name,
             slug: cleanSlug,
             messengerPageUsername: '',
             email: user.email || email.trim(),
-            status: 'active',
+            status: 'pending',
             plan: 'starter',
             createdAt: Date.now()
           };
 
-          if (urlPaymentRef) {
+          if (activeRef) {
             profileData.planStatus = 'pending_payment';
-            profileData.paymentReference = urlPaymentRef.trim();
+            profileData.paymentReference = activeRef;
             profileData.paymentDate = Date.now();
             profileData.paymentAmount = 499;
           }
@@ -267,6 +272,30 @@ export default function Login() {
                 />
               </div>
             </div>
+
+            {!isLogin && (
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-700 ml-1 flex items-center gap-1.5">
+                    <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                    Paid via GCash? GCash Ref # (Optional)
+                  </label>
+                  <span className="text-[10px] font-bold text-amber-600 uppercase">For Pro ₱499</span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={gcashRef}
+                    onChange={(e) => setGcashRef(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-emerald-50/40 border border-emerald-200/70 rounded-xl text-xs font-mono font-bold text-zinc-900 focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all placeholder:font-sans placeholder:font-normal placeholder:text-zinc-400"
+                    placeholder="e.g. 1029 3847 5610 (if already paid)"
+                  />
+                </div>
+                <p className="text-[10px] text-zinc-400 leading-tight pl-1">
+                  Transferred ₱499 via GCash? Paste your reference number here so our team can immediately activate your Pro plan.
+                </p>
+              </div>
+            )}
 
             {error && (
               <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100">
