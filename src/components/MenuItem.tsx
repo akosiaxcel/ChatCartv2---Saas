@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Ban } from 'lucide-react';
 import { MenuItem as MenuItemType } from '../types';
 
 interface MenuItemProps {
@@ -13,19 +13,27 @@ interface MenuItemProps {
 }
 
 export default function MenuItem({ item, quantity, onAdd, onRemove, onClick, currency }: MenuItemProps) {
-  if (item.available === false) return null;
+  const isSoldOut = item.available === false;
 
   return (
     <div 
       onClick={onClick}
-      className="flex flex-col group h-full cursor-pointer select-none"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      className={`flex flex-col group h-full cursor-pointer select-none text-left focus:outline-hidden ${isSoldOut ? 'opacity-80' : ''}`}
     >
       <div className="relative aspect-square rounded-3xl overflow-hidden bg-zinc-100 mb-3 shadow-xs border border-zinc-100 transition-all duration-300 group-hover:shadow-md">
         {item.imageUrl ? (
           <img
             src={item.imageUrl}
             alt={item.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`w-full h-full object-cover transition-transform duration-500 ${isSoldOut ? 'grayscale contrast-125' : 'group-hover:scale-105'}`}
             referrerPolicy="no-referrer"
             loading="lazy"
           />
@@ -35,27 +43,49 @@ export default function MenuItem({ item, quantity, onAdd, onRemove, onClick, cur
           </div>
         )}
         
-        {item.isPopular && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
-            Popular
+        {/* Badges container */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1 z-10">
+          {item.isPopular && (
+            <div className="bg-red-500 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+              Popular
+            </div>
+          )}
+          {isSoldOut && (
+            <div className="bg-zinc-900/90 backdrop-blur-xs text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md border border-white/20 flex items-center gap-1">
+              <Ban className="w-2.5 h-2.5 text-red-400" />
+              Sold Out
+            </div>
+          )}
+        </div>
+
+        {/* Action Button: Sold Out Pill or Quick Add Button */}
+        {isSoldOut ? (
+          <div 
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick?.();
+            }}
+            className="absolute bottom-3 right-3 bg-zinc-900/90 backdrop-blur-xs text-zinc-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md border border-white/10"
+          >
+            Sold Out
           </div>
+        ) : (
+          /* Quick Add Button with stopPropagation so card click opens modal separately if desired */
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
+            aria-label={`Add ${item.name} to cart`}
+            className="absolute bottom-3 right-3 w-9 h-9 bg-white/95 hover:bg-white rounded-full shadow-md flex items-center justify-center text-zinc-900 active:scale-90 transition-all border border-zinc-200/50 hover:shadow-lg"
+          >
+            <Plus className="w-5 h-5 text-zinc-800" />
+          </button>
         )}
 
-        {/* Quick Add Button with stopPropagation so card click doesn't clash */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onAdd();
-          }}
-          aria-label={`Add ${item.name} to cart`}
-          className="absolute bottom-3 right-3 w-9 h-9 bg-white/95 hover:bg-white rounded-full shadow-md flex items-center justify-center text-zinc-900 active:scale-90 transition-all border border-zinc-200/50 hover:shadow-lg"
-        >
-          <Plus className="w-5 h-5 text-zinc-800" />
-        </button>
-
         {/* Active Quantity Badge in image */}
-        {quantity > 0 && (
+        {!isSoldOut && quantity > 0 && (
           <div 
             onClick={(e) => e.stopPropagation()}
             className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-zinc-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-white/20 text-white"
@@ -98,9 +128,16 @@ export default function MenuItem({ item, quantity, onAdd, onRemove, onClick, cur
             </p>
           )}
         </div>
-        <p className="text-emerald-600 font-mono font-bold text-sm">
-          {currency}{Number(item.price).toFixed(2)}
-        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-emerald-600 font-mono font-bold text-sm">
+            {currency}{Number(item.price).toFixed(2)}
+          </p>
+          {isSoldOut && (
+            <span className="text-[10px] font-black uppercase tracking-wider text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-md">
+              Sold Out
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

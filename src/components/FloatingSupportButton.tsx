@@ -1,36 +1,18 @@
 import React, { useState } from 'react';
 import { PAYMENT_CONFIG } from '../lib/constants';
-import { MessageCircle, X } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
 
 export function FloatingSupportButton() {
   const [isHovered, setIsHovered] = useState(false);
-  const location = useLocation();
-
-  // If on a public menu page with a customer cart, we keep it subtle or in a non-conflicting position
-  const isPublicMenu = location.pathname.startsWith('/menu/') || (
-    location.pathname !== '/login' && 
-    location.pathname !== '/superadmin' && 
-    location.pathname !== '/dashboard' && 
-    location.pathname !== '/editor' && 
-    location.pathname !== '/superadmin/dashboard' &&
-    !location.pathname.endsWith('/dashboard') &&
-    !location.pathname.endsWith('/editor')
-  );
 
   return (
-    <div 
-      className={`fixed z-40 transition-all duration-300 ${
-        isPublicMenu ? 'bottom-24 left-4 md:bottom-6 md:left-6' : 'bottom-6 right-6'
-      }`}
-    >
+    <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40">
       <a
         href={PAYMENT_CONFIG.messengerUrl}
         target="_blank"
         rel="noopener noreferrer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group flex items-center gap-3 bg-white hover:bg-zinc-900 text-zinc-800 hover:text-white p-3 md:px-4 md:py-3 rounded-full shadow-lg hover:shadow-2xl border border-zinc-200/80 hover:border-zinc-800 transition-all duration-300 active:scale-95"
+        className="group flex items-center gap-2.5 sm:gap-3 bg-white/95 backdrop-blur-md hover:bg-zinc-900 text-zinc-800 hover:text-white p-2.5 sm:px-4 sm:py-3 rounded-full shadow-lg hover:shadow-2xl border border-zinc-200/80 hover:border-zinc-800 transition-all duration-300 active:scale-95"
         aria-label="Contact WapDev Support on Messenger"
       >
         {/* Messenger Icon with Pulse Glow */}
@@ -63,3 +45,4 @@ export function FloatingSupportButton() {
     </div>
   );
 }
+
