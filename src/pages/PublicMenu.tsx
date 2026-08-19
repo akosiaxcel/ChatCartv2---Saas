@@ -4,7 +4,6 @@ import { getBusinessProfile, getCategories, getMenuItems, getBusinessProfileBySl
 import { BusinessProfile, Category, MenuItem as MenuItemType, CartItem } from '../types';
 import MenuCategory from '../components/MenuCategory';
 import Cart from '../components/Cart';
-import { ItemDetailModal } from '../components/ItemDetailModal';
 import { Loader2, Utensils, ShoppingCart, Search, X, ArrowLeft, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from '../components/Logo';
@@ -18,7 +17,6 @@ export default function PublicMenu() {
   
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const [activeCategoryId, setActiveCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -160,10 +158,8 @@ export default function PublicMenu() {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const filteredItems = items.filter(item => 
-    item.available !== false && (
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    )
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const filteredCategories = categories.filter(category => {
@@ -350,7 +346,6 @@ export default function PublicMenu() {
               items={filteredItems.filter(i => i.categoryId === category.id)}
               cart={cart}
               onUpdateCart={handleUpdateCart}
-              onSelectItem={(item) => setSelectedItem(item)}
               currency="₱"
             />
           </div>
@@ -377,16 +372,6 @@ export default function PublicMenu() {
           </p>
         </footer>
       </main>
-
-      {/* Item Detail Modal */}
-      <ItemDetailModal
-        isOpen={!!selectedItem}
-        item={selectedItem}
-        onClose={() => setSelectedItem(null)}
-        cartItem={cart.find(i => i.id === selectedItem?.id)}
-        onUpdateCart={handleUpdateCart}
-        currency="₱"
-      />
 
       <Cart
         isOpen={isCartOpen}
