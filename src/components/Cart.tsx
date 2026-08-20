@@ -93,17 +93,17 @@ Order generated via ChatCart
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             onClick={onOpen}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-10 py-4 sm:py-5 rounded-[24px] shadow-2xl flex items-center gap-5 active:scale-95 transition-all border-2 border-white/80"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-zinc-900 hover:bg-zinc-800 text-white px-6 sm:px-10 py-4 sm:py-5 rounded-[24px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-5 active:translate-x-[1px] active:translate-y-[1px] transition-all border-2 border-zinc-950 cursor-pointer"
           >
             <div className="relative">
               <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-emerald-600">
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-zinc-950">
                 {itemCount}
               </span>
             </div>
             <div className="flex flex-col items-start text-left">
-              <span className="text-[10px] uppercase font-black tracking-widest opacity-90">View Cart</span>
-              <span className="text-base sm:text-lg font-black tracking-tight">{currency}{total.toFixed(2)}</span>
+              <span className="text-[10px] uppercase font-black tracking-widest text-zinc-300">View Cart</span>
+              <span className="text-base sm:text-lg font-black tracking-tight text-white">{currency}{total.toFixed(2)}</span>
             </div>
           </motion.button>
         )}
@@ -118,7 +118,7 @@ Order generated via ChatCart
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClose}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[60]"
             />
             <motion.div
               initial={{ y: '100%' }}
@@ -128,7 +128,7 @@ Order generated via ChatCart
               }}
               exit={{ y: '100%' }}
               className={cn(
-                "fixed z-[70] bg-zinc-50 flex flex-col shadow-2xl overflow-hidden",
+                "fixed z-[70] bg-zinc-50 flex flex-col shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 overflow-hidden",
                 // Mobile: Bottom sheet
                 "inset-x-0 bottom-0 rounded-t-[36px] max-h-[90vh]",
                 // Desktop: Centered modal
@@ -137,19 +137,19 @@ Order generated via ChatCart
             >
               {!showReceipt ? (
                 <>
-                  <div className="p-5 sm:p-6 flex items-center justify-between bg-white border-b border-zinc-100 shrink-0">
+                  <div className="p-5 sm:p-6 flex items-center justify-between bg-white border-b-2 border-zinc-900 shrink-0">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                      <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-700 border-2 border-zinc-900">
                         <ShoppingCart className="w-5 h-5" />
                       </div>
                       <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 tracking-tight">Your Order</h2>
-                        <p className="text-zinc-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">{itemCount} items selected</p>
+                        <h2 className="text-lg sm:text-xl font-black text-zinc-900 tracking-tight">Your Order</h2>
+                        <p className="text-zinc-600 text-[10px] sm:text-xs font-bold uppercase tracking-wider">{itemCount} items selected</p>
                       </div>
                     </div>
                     <button
                       onClick={handleClose}
-                      className="p-2 bg-zinc-100 rounded-xl text-zinc-500 hover:bg-zinc-200 transition-colors"
+                      className="p-2 bg-zinc-100 rounded-xl text-zinc-800 hover:bg-zinc-200 transition-colors border-2 border-zinc-900 active:translate-x-[1px] active:translate-y-[1px]"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -158,34 +158,34 @@ Order generated via ChatCart
                   <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-3">
                     {cart.length === 0 ? (
                       <div className="py-16 text-center">
-                        <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4 text-zinc-400">
+                        <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4 text-zinc-400 border-2 border-zinc-900">
                           <ShoppingCart className="w-8 h-8" />
                         </div>
-                        <p className="text-zinc-400 font-bold text-base">Your cart is empty</p>
+                        <p className="text-zinc-600 font-bold text-base">Your cart is empty</p>
                       </div>
                     ) : (
                       cart.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-zinc-100 shadow-2xs">
+                        <div key={item.id} className="flex items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                           <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-zinc-900 text-sm sm:text-base truncate">{item.name}</h4>
-                            <p className="text-xs text-zinc-400 font-mono font-medium">
+                            <p className="text-xs text-zinc-600 font-mono font-bold">
                               {currency}{Number(item.price).toFixed(2)} each
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1.5 bg-zinc-100 p-1 rounded-xl">
+                            <div className="flex items-center gap-1.5 bg-zinc-100 p-1 rounded-xl border border-zinc-900">
                               <button
                                 onClick={() => onUpdateCart(item, -1)}
-                                className="w-7 h-7 flex items-center justify-center bg-white rounded-lg text-zinc-900 shadow-2xs active:scale-90 transition-all hover:bg-zinc-50"
+                                className="w-7 h-7 flex items-center justify-center bg-white rounded-lg text-zinc-900 border border-zinc-900 active:scale-90 transition-all hover:bg-zinc-50 font-bold"
                               >
                                 <Minus className="w-3.5 h-3.5" />
                               </button>
-                              <span className="w-6 text-center text-sm font-bold text-zinc-900">
+                              <span className="w-6 text-center text-sm font-black text-zinc-900 font-mono">
                                 {item.quantity}
                               </span>
                               <button
                                 onClick={() => onUpdateCart(item, 1)}
-                                className="w-7 h-7 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white shadow-2xs active:scale-90 transition-all"
+                                className="w-7 h-7 flex items-center justify-center bg-zinc-900 hover:bg-zinc-800 rounded-lg text-white border border-zinc-900 active:scale-90 transition-all font-bold"
                               >
                                 <Plus className="w-3.5 h-3.5" />
                               </button>
@@ -196,18 +196,18 @@ Order generated via ChatCart
                     )}
                   </div>
 
-                  <div className="p-5 sm:p-6 bg-white border-t border-zinc-100 space-y-4 shrink-0">
+                  <div className="p-5 sm:p-6 bg-white border-t-2 border-zinc-900 space-y-4 shrink-0">
                     <div className="flex items-end justify-between">
                       <button
                         onClick={onClear}
-                        className="flex items-center gap-1.5 text-[11px] font-bold text-red-500 uppercase tracking-wider hover:opacity-80 transition-opacity mb-1"
+                        className="flex items-center gap-1.5 text-[11px] font-bold text-red-600 uppercase tracking-wider hover:underline transition-opacity mb-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         Clear Cart
                       </button>
                       <div className="text-right">
-                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-0.5">Total</p>
-                        <p className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-mono">
+                        <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider mb-0.5">Total</p>
+                        <p className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight font-mono">
                           {currency}{total.toFixed(2)}
                         </p>
                       </div>
@@ -217,7 +217,7 @@ Order generated via ChatCart
                       <button
                         disabled={cart.length === 0}
                         onClick={() => setShowReceipt(true)}
-                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all disabled:opacity-50"
+                        className="w-full bg-zinc-900 hover:bg-zinc-800 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all disabled:opacity-50 cursor-pointer"
                       >
                         <Receipt className="w-4 h-4" />
                         Show Receipt to Cashier
@@ -228,20 +228,20 @@ Order generated via ChatCart
                           disabled={cart.length === 0}
                           onClick={handleCopyOrder}
                           className={cn(
-                            "flex-1 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] border",
+                            "flex-1 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:translate-x-[1px] active:translate-y-[1px] border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] cursor-pointer",
                             copied 
-                              ? "bg-emerald-50 border-emerald-200 text-emerald-600" 
-                              : "bg-white border-zinc-200 text-zinc-800 hover:bg-zinc-50"
+                              ? "bg-emerald-100 text-emerald-950" 
+                              : "bg-white text-zinc-900 hover:bg-zinc-100"
                           )}
                         >
-                          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copied ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Copy className="w-3.5 h-3.5" />}
                           {copied ? 'Copied!' : 'Copy Summary'}
                         </button>
 
                         <button
                           disabled={cart.length === 0}
                           onClick={handleOrderMessenger}
-                          className="flex-[2] bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                          className="flex-[2] bg-emerald-500 hover:bg-emerald-400 text-zinc-950 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all disabled:opacity-50 cursor-pointer"
                         >
                           <MessageCircle className="w-4 h-4" />
                           Order via Messenger
@@ -253,70 +253,70 @@ Order generated via ChatCart
               ) : (
                 /* Receipt View */
                 <div className="flex flex-col h-full bg-zinc-100 overflow-hidden">
-                  <div className="p-4 sm:p-5 flex items-center justify-between shrink-0">
+                  <div className="p-4 sm:p-5 flex items-center justify-between shrink-0 border-b-2 border-zinc-900 bg-white">
                     <button 
                       onClick={() => setShowReceipt(false)}
-                      className="flex items-center gap-1.5 text-zinc-600 font-bold text-xs hover:text-zinc-900"
+                      className="flex items-center gap-1.5 text-zinc-900 font-bold text-xs hover:underline"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       Back to Cart
                     </button>
                     <button 
                       onClick={() => window.print()}
-                      className="p-2 bg-white rounded-xl text-emerald-600 shadow-2xs hover:bg-zinc-50 transition-colors"
+                      className="p-2 bg-white rounded-xl text-zinc-900 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:bg-zinc-100 transition-colors"
                       title="Print Receipt"
                     >
                       <Printer className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto px-4 pb-8">
-                    <div className="bg-white rounded-3xl shadow-lg p-6 max-w-sm mx-auto relative overflow-hidden">
+                  <div className="flex-1 overflow-y-auto px-4 py-6">
+                    <div className="bg-white rounded-3xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 p-6 max-w-sm mx-auto relative overflow-hidden">
                       <div className="text-center mb-6 pt-2">
-                        <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-600">
+                        <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-700 border-2 border-zinc-900">
                           <Utensils className="w-6 h-6" />
                         </div>
                         <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight">
                           {profile?.businessName || 'Order Receipt'}
                         </h3>
-                        <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">
+                        <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest mt-0.5">
                           {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
 
-                      <div className="border-t border-dashed border-zinc-200 py-4 space-y-2.5">
+                      <div className="border-t-2 border-dashed border-zinc-900 py-4 space-y-2.5">
                         {cart.map((item) => (
                           <div key={item.id} className="flex justify-between items-start gap-3">
                             <div className="flex-1 min-w-0">
                               <p className="font-bold text-zinc-900 text-xs leading-tight truncate">{item.name}</p>
-                              <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                              <p className="text-[10px] text-zinc-600 font-mono font-semibold mt-0.5">
                                 {item.quantity} x {currency}{Number(item.price).toFixed(2)}
                               </p>
                             </div>
-                            <p className="font-bold text-zinc-900 text-xs font-mono">
+                            <p className="font-black text-zinc-900 text-xs font-mono">
                               {currency}{(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         ))}
                       </div>
 
-                      <div className="border-t border-dashed border-zinc-200 pt-4 mt-1">
+                      <div className="border-t-2 border-dashed border-zinc-900 pt-4 mt-1">
                         <div className="flex justify-between items-center mb-1">
-                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Subtotal</p>
-                          <p className="font-mono text-xs text-zinc-700">{currency}{total.toFixed(2)}</p>
+                          <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider">Subtotal</p>
+                          <p className="font-mono text-xs font-bold text-zinc-800">{currency}{total.toFixed(2)}</p>
                         </div>
                         <div className="flex justify-between items-center">
                           <p className="text-xs font-black text-zinc-900 uppercase">Total</p>
-                          <p className="text-xl font-black text-emerald-600 tracking-tight font-mono">{currency}{total.toFixed(2)}</p>
+                          <p className="text-xl font-black text-zinc-900 tracking-tight font-mono">{currency}{total.toFixed(2)}</p>
                         </div>
                       </div>
 
                       <div className="mt-6 text-center">
-                        <div className="inline-block px-4 py-2 bg-zinc-50 rounded-xl border border-zinc-100 mb-3">
-                          <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Order Reference</p>
-                          <p className="font-mono font-bold text-zinc-900 text-xs mt-0.5">#ORD-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+                        <div className="inline-block px-4 py-2 bg-zinc-50 rounded-xl border-2 border-zinc-900 mb-3 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                          <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">Order Reference</p>
+                          <p className="font-mono font-black text-zinc-900 text-xs mt-0.5">#ORD-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
                         </div>
-                        <p className="text-[10px] text-zinc-400 leading-relaxed px-2">
+                        <p className="text-[10px] text-zinc-600 leading-relaxed px-2 font-medium">
                           Show this screen to the cashier or staff to verify your order.
                         </p>
                       </div>

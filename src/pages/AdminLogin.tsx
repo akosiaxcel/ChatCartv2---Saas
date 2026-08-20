@@ -68,8 +68,8 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-zinc-800 rounded-[32px] shadow-2xl p-8 md:p-10 border border-zinc-700">
         <div className="flex flex-col items-center text-center mb-10">
-          <div className="w-24 h-24 rounded-[32px] mb-4 shadow-2xl bg-emerald-500 flex items-center justify-center shadow-emerald-500/40 p-3">
-            <Logo size={74} color="white" />
+          <div className="w-24 h-24 rounded-[32px] mb-4 shadow-2xl bg-white flex items-center justify-center border border-zinc-700/50 p-1.5 overflow-hidden">
+            <Logo size={86} />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-2 justify-center">
             <ShieldCheck className="w-7 h-7 text-emerald-400" />

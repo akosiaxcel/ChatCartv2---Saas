@@ -171,8 +171,8 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
       <header className="bg-white border-b border-zinc-100 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs p-1">
-              <Logo size={26} color="white" />
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-xs border border-zinc-200 p-0.5 overflow-hidden">
+              <Logo size={34} />
             </div>
             <span className="font-extrabold text-zinc-900 text-lg tracking-tight">ChatCart</span>
             <span className="bg-amber-100 text-amber-900 text-[10px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
@@ -222,7 +222,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
           
           {/* Left Column: Pro Value & Comparison */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 rounded-3xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 rounded-3xl p-6 sm:p-7 text-white shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 relative overflow-hidden">
               <div className="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none" />
               
               <div className="flex items-center justify-between mb-4">
@@ -232,12 +232,12 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                 <span className="text-2xl font-black font-mono">₱499<span className="text-xs font-medium text-emerald-200">/mo</span></span>
               </div>
 
-              <h2 className="text-xl font-bold mb-4">Everything Included in Pro:</h2>
+              <h2 className="text-xl font-black mb-4">Everything Included in Pro:</h2>
 
               <ul className="space-y-3 text-xs sm:text-sm">
                 {PRICING_CONFIG.pro.features.map((feat, idx) => (
                   <li key={idx} className="flex items-center gap-2.5">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/40 text-emerald-100 flex items-center justify-center shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-emerald-500/40 text-emerald-100 flex items-center justify-center shrink-0 border border-emerald-300/40">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                     <span className="font-medium text-emerald-50">{feat}</span>
@@ -247,67 +247,67 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
 
               <div className="mt-6 pt-4 border-t border-emerald-500/40 flex items-center justify-between text-xs text-emerald-100">
                 <span>Monthly Billing Cycle</span>
-                <span className="font-bold bg-emerald-500/30 px-2 py-0.5 rounded">5-Day Grace Period</span>
+                <span className="font-bold bg-emerald-500/30 px-2 py-0.5 rounded border border-emerald-300/30">5-Day Grace Period</span>
               </div>
             </div>
 
             {/* Quick reassurance */}
-            <div className="bg-white rounded-2xl p-5 border border-zinc-200/80 shadow-2xs space-y-2 text-xs text-zinc-600">
+            <div className="bg-white rounded-2xl p-5 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] space-y-2 text-xs text-zinc-700">
               <div className="font-bold text-zinc-900 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <ShieldCheck className="w-4 h-4 text-emerald-700" />
                 Direct WapDev Verification
               </div>
-              <p className="leading-relaxed">
+              <p className="leading-relaxed font-medium">
                 Payments are verified manually by our admin team. Once you create your store account, our team activates Pro directly on your store.
               </p>
             </div>
           </div>
 
           {/* Right Column: Interactive Upgrade Checkout Card */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-zinc-100">
+          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900">
             {submitted ? (
               <div className="space-y-6">
                 <div className="text-center space-y-2">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h2 className="text-2xl font-bold text-zinc-900">Payment Submitted!</h2>
-                  <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mx-auto leading-relaxed">
-                    Pro request for <strong className="text-zinc-900">{storeName}</strong> is logged with GCash Ref <span className="font-mono font-bold text-emerald-700">#{refNumber}</span>.
+                  <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mx-auto leading-relaxed font-medium">
+                    Pro request for <strong className="text-zinc-900">{storeName}</strong> is logged with GCash Ref <span className="font-mono font-bold text-emerald-800">#{refNumber}</span>.
                   </p>
                 </div>
 
                 {/* Auto-Generated Summary Receipt Card */}
-                <div className="bg-zinc-50 border border-dashed border-zinc-300 rounded-2xl p-4 sm:p-5 font-mono text-xs space-y-2.5">
-                  <div className="flex items-center justify-between text-zinc-400 font-bold uppercase tracking-widest text-[10px] pb-2 border-b border-zinc-200">
-                    <span className="flex items-center gap-1.5">
-                      <Receipt className="w-4 h-4 text-zinc-600" /> Payment Summary
+                <div className="bg-zinc-50 border-2 border-dashed border-zinc-900 rounded-2xl p-4 sm:p-5 font-mono text-xs space-y-2.5">
+                  <div className="flex items-center justify-between text-zinc-600 font-bold uppercase tracking-widest text-[10px] pb-2 border-b border-zinc-200">
+                    <span className="flex items-center gap-1.5 text-zinc-900 font-black">
+                      <Receipt className="w-4 h-4 text-zinc-800" /> Payment Summary
                     </span>
-                    <span className="text-emerald-600 font-bold">READY TO VERIFY</span>
+                    <span className="text-emerald-700 font-black">READY TO VERIFY</span>
                   </div>
 
-                  <div className="space-y-1.5 text-zinc-700 text-xs leading-relaxed pt-1">
-                    <div><strong className="text-zinc-900">Store:</strong> {storeName}</div>
-                    {ownerContact && <div><strong className="text-zinc-900">Owner Contact:</strong> {ownerContact}</div>}
-                    <div><strong className="text-zinc-900">Plan:</strong> Pro Business (₱499 / mo)</div>
-                    <div><strong className="text-zinc-900">GCash Ref:</strong> <span className="text-emerald-700 font-bold">#{refNumber}</span></div>
-                    <div><strong className="text-zinc-900">Amount:</strong> ₱499.00</div>
-                    <div><strong className="text-zinc-900">Recipient:</strong> {PAYMENT_CONFIG.gcashNumber}</div>
+                  <div className="space-y-1.5 text-zinc-800 text-xs leading-relaxed pt-1 font-medium">
+                    <div><strong className="text-zinc-900 font-bold">Store:</strong> {storeName}</div>
+                    {ownerContact && <div><strong className="text-zinc-900 font-bold">Owner Contact:</strong> {ownerContact}</div>}
+                    <div><strong className="text-zinc-900 font-bold">Plan:</strong> Pro Business (₱499 / mo)</div>
+                    <div><strong className="text-zinc-900 font-bold">GCash Ref:</strong> <span className="text-emerald-800 font-bold">#{refNumber}</span></div>
+                    <div><strong className="text-zinc-900 font-bold">Amount:</strong> ₱499.00</div>
+                    <div><strong className="text-zinc-900 font-bold">Recipient:</strong> {PAYMENT_CONFIG.gcashNumber}</div>
                   </div>
                 </div>
 
                 {/* REQUIRED STEP 3 FOR NEW USERS: Create Store Account */}
                 {!user ? (
-                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-500/30 rounded-2xl p-5 space-y-3.5 shadow-xs">
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-zinc-900 rounded-2xl p-5 space-y-3.5 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                     <div className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-black">
+                      <div className="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center shrink-0 border-2 border-zinc-950 font-black">
                         3
                       </div>
                       <div>
-                        <h3 className="font-extrabold text-zinc-900 text-sm sm:text-base flex items-center gap-1.5">
+                        <h3 className="font-black text-zinc-900 text-sm sm:text-base flex items-center gap-1.5">
                           Required: Create Your Starter Store Account
                         </h3>
-                        <p className="text-xs text-zinc-600 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-zinc-700 mt-0.5 leading-relaxed font-medium">
                           Create your store account now so we can link your payment and instantly activate your Pro menu.
                         </p>
                       </div>
@@ -315,17 +315,17 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
 
                     <Link
                       to={signupRedirectUrl}
-                      className="w-full min-h-[50px] py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm sm:text-base shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                      className="w-full min-h-[50px] py-3.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-sm sm:text-base border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 active:translate-x-[1px] active:translate-y-[1px]"
                     >
                       <UserPlus className="w-5 h-5" />
                       Create Store Account & Claim Pro →
                     </Link>
                   </div>
                 ) : (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <div className="text-xs text-emerald-900">
-                      <strong>Store Account Linked!</strong> Your logged-in store <strong className="text-zinc-900">({profile?.businessName || storeName})</strong> is in the verification queue.
+                  <div className="bg-emerald-50 border-2 border-zinc-900 rounded-2xl p-4 flex items-center gap-3 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
+                    <div className="text-xs text-emerald-950 font-medium">
+                      <strong className="font-bold">Store Account Linked!</strong> Your logged-in store <strong className="text-zinc-900 font-bold">({profile?.businessName || storeName})</strong> is in the verification queue.
                     </div>
                   </div>
                 )}
@@ -335,7 +335,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <button
                     type="button"
                     onClick={() => handleOpenMessenger(refNumber, storeName, ownerContact)}
-                    className="w-full min-h-[46px] py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[46px] py-3 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   >
                     <MessageSquare className="w-4 h-4 text-yellow-400" />
                     Send Confirmation to WapDev Messenger
@@ -344,12 +344,12 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <button
                     type="button"
                     onClick={() => handleCopyUpgradeSummary(refNumber, storeName, ownerContact)}
-                    className="w-full min-h-[42px] py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[42px] py-2.5 px-4 bg-white hover:bg-zinc-100 text-zinc-900 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   >
                     {copiedSummary ? (
                       <>
-                        <Check className="w-4 h-4 text-emerald-600" />
-                        <span className="text-emerald-600">Copied to Clipboard!</span>
+                        <Check className="w-4 h-4 text-emerald-700" />
+                        <span className="text-emerald-800 font-bold">Copied to Clipboard!</span>
                       </>
                     ) : (
                       <>
@@ -362,7 +362,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   {user && (
                     <Link
                       to="/dashboard"
-                      className="block text-center w-full py-2.5 text-xs font-bold text-zinc-500 hover:text-zinc-800 rounded-xl transition-colors"
+                      className="block text-center w-full py-2.5 text-xs font-bold text-zinc-700 hover:text-zinc-950 rounded-xl transition-colors hover:underline"
                     >
                       Return to Dashboard
                     </Link>
@@ -373,26 +373,26 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
               <div className="space-y-6">
                 {/* Step 1: GCash Payment */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-black">1</span>
+                  <div className="flex items-center gap-2 text-zinc-900 font-black text-sm">
+                    <span className="w-6 h-6 rounded-full bg-zinc-900 text-white text-xs flex items-center justify-center font-black border border-zinc-900">1</span>
                     Step 1: Send ₱499 via GCash
                   </div>
 
-                  <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-2xs">
+                  <div className="bg-emerald-50/70 border-2 border-zinc-900 rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                     <div className="min-w-0">
-                      <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">GCash Account Number</div>
+                      <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider">GCash Account Number</div>
                       <div className="font-mono text-lg sm:text-xl font-black text-zinc-900">{PAYMENT_CONFIG.gcashNumber}</div>
-                      <div className="text-xs text-emerald-800 font-semibold">{PAYMENT_CONFIG.gcashAccountName}</div>
+                      <div className="text-xs text-emerald-900 font-bold">{PAYMENT_CONFIG.gcashAccountName}</div>
                     </div>
 
                     <button
                       type="button"
                       onClick={handleCopyGcash}
-                      className="min-h-[44px] px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-xs active:scale-95"
+                      className="min-h-[44px] px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                     >
                       {copiedGcash ? (
                         <>
-                          <Check className="w-4 h-4" /> Copied!
+                          <Check className="w-4 h-4 text-emerald-400" /> Copied!
                         </>
                       ) : (
                         <>
@@ -406,14 +406,14 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                 {/* Step 2: Verification Details */}
                 <form onSubmit={handleSubmitPayment} className="space-y-4">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs flex items-center justify-center font-black">2</span>
+                    <div className="flex items-center gap-2 text-zinc-900 font-black text-sm">
+                      <span className="w-6 h-6 rounded-full bg-zinc-900 text-white text-xs flex items-center justify-center font-black border border-zinc-900">2</span>
                       Step 2: Enter Store & GCash Reference
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                        <Store className="w-3.5 h-3.5 text-emerald-600" />
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-800 mb-1.5 flex items-center gap-1.5">
+                        <Store className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Store / Restaurant Name <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
@@ -422,13 +422,13 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                         value={storeName}
                         onChange={(e) => setStoreName(e.target.value)}
                         required
-                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-zinc-900 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                        <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-800 mb-1.5 flex items-center gap-1.5">
+                        <UserPlus className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Owner Email or Contact Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
@@ -437,13 +437,13 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                         value={ownerContact}
                         onChange={(e) => setOwnerContact(e.target.value)}
                         required
-                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-zinc-900 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                        <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-800 mb-1.5 flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
                         <span>GCash Reference Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
@@ -452,13 +452,13 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                         value={refNumber}
                         onChange={(e) => setRefNumber(e.target.value)}
                         required
-                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
+                        className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-zinc-900 text-sm font-mono font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                       />
                     </div>
                   </div>
 
                   {error && (
-                    <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100">
+                    <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl border-2 border-red-600">
                       {error}
                     </div>
                   )}
@@ -467,15 +467,15 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full min-h-[50px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm sm:text-base shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                      className="w-full min-h-[50px] py-3.5 px-4 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white rounded-xl font-bold text-sm sm:text-base border-2 border-zinc-950 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                     >
                       {submitting ? 'Verifying Details...' : 'Continue to Account Setup →'}
                       <Send className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-400 text-center pt-2">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-500 text-center pt-2 font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                     Step 1: GCash → Step 2: Reference # → Step 3: Create Account
                   </div>
                 </form>

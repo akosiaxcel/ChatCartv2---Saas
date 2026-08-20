@@ -201,7 +201,7 @@ export default function PublicMenu() {
   return (
     <div className="min-h-screen bg-white pb-32">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-100">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-zinc-900">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <AnimatePresence mode="wait">
             {!isSearchOpen ? (
@@ -212,14 +212,14 @@ export default function PublicMenu() {
                 exit={{ opacity: 0, x: -10 }}
                 className="flex items-center gap-3 min-w-0"
               >
-                <div className="w-10 h-10 rounded-2xl border border-zinc-100 flex items-center justify-center overflow-hidden bg-zinc-50 shrink-0 shadow-2xs">
+                <div className="w-10 h-10 rounded-2xl border-2 border-zinc-900 flex items-center justify-center overflow-hidden bg-zinc-50 shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                   {profile.logoUrl ? (
                     <img src={profile.logoUrl} alt={profile.businessName} className="w-full h-full object-cover" />
                   ) : (
-                    <Utensils className="w-5 h-5 text-zinc-400" />
+                    <Utensils className="w-5 h-5 text-zinc-600" />
                   )}
                 </div>
-                <h1 className="text-lg sm:text-xl font-black text-emerald-700 leading-tight uppercase tracking-tight truncate">
+                <h1 className="text-lg sm:text-xl font-black text-zinc-900 leading-tight uppercase tracking-tight truncate">
                   {profile.businessName}
                 </h1>
               </motion.div>
@@ -232,39 +232,39 @@ export default function PublicMenu() {
                 className="flex items-center gap-2 flex-1 mr-3"
               >
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
                     autoFocus
                     type="text"
                     placeholder="Search dishes, drinks, desserts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-zinc-100 border-none rounded-xl py-2 pl-9 pr-4 text-zinc-900 text-sm font-medium focus:ring-2 focus:ring-emerald-500"
+                    className="w-full bg-zinc-50 border-2 border-zinc-900 rounded-xl py-2 pl-9 pr-4 text-zinc-900 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                   />
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
           
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button 
               onClick={() => {
                 setIsSearchOpen(!isSearchOpen);
                 if (isSearchOpen) setSearchQuery('');
               }}
-              className="p-2 text-zinc-500 hover:text-emerald-600 hover:bg-zinc-50 rounded-xl transition-colors"
+              className="p-2 text-zinc-800 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px]"
               aria-label="Toggle search"
             >
-              {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+              {isSearchOpen ? <X className="w-4 h-4" /> : <Search className="w-4 h-4" />}
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-zinc-700 hover:text-emerald-600 hover:bg-zinc-50 rounded-xl transition-colors"
+              className="relative p-2 text-zinc-800 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px]"
               aria-label="Open cart"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-4 h-4" />
               {cartCount > 0 && (
-                <span className="absolute 0 top-0.5 right-0.5 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-zinc-900">
                   {cartCount}
                 </span>
               )}
@@ -275,18 +275,18 @@ export default function PublicMenu() {
 
       {/* Category Slider */}
       {categories.length > 0 && (
-        <div className="sticky top-[57px] z-40 bg-white/95 backdrop-blur-md py-3 border-b border-zinc-100">
+        <div className="sticky top-[59px] z-40 bg-white/95 backdrop-blur-md py-3 border-b-2 border-zinc-900">
           <div className="max-w-7xl mx-auto">
             <div 
               ref={scrollContainerRef}
-              className="flex gap-2 overflow-x-auto px-4 no-scrollbar scroll-smooth sm:justify-center"
+              className="flex gap-2.5 overflow-x-auto px-4 no-scrollbar scroll-smooth sm:justify-center"
             >
               <button
                 onClick={() => setActiveCategoryId('all')}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 ${
+                className={`flex-shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border-2 border-zinc-900 active:translate-x-[1px] active:translate-y-[1px] ${
                   activeCategoryId === 'all'
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                    : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
+                    ? 'bg-zinc-900 text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]'
+                    : 'bg-white text-zinc-800 hover:bg-zinc-100 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]'
                 }`}
               >
                 <span>🍽️</span>
@@ -297,10 +297,10 @@ export default function PublicMenu() {
                 <button
                   key={category.id}
                   onClick={() => setActiveCategoryId(category.id)}
-                  className={`flex-shrink-0 px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 ${
+                  className={`flex-shrink-0 px-3.5 py-2 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 border-2 border-zinc-900 active:translate-x-[1px] active:translate-y-[1px] ${
                     activeCategoryId === category.id
-                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                      : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
+                      ? 'bg-zinc-900 text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]'
+                      : 'bg-white text-zinc-800 hover:bg-zinc-100 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]'
                   }`}
                 >
                   <span>{category.icon || '🍽️'}</span>
@@ -364,8 +364,8 @@ export default function PublicMenu() {
           >
             <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Powered by</span>
             <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs p-0.5">
-                <Logo size={18} color="white" />
+              <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-xs border border-zinc-200 p-0.5 overflow-hidden">
+                <Logo size={24} />
               </div>
               <span className="font-bold text-zinc-800 text-sm tracking-tight group-hover:text-emerald-600 transition-colors">ChatCart</span>
             </div>

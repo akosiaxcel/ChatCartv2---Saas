@@ -190,8 +190,8 @@ export default function Login() {
 
       <div className="w-full max-w-md bg-white rounded-[32px] shadow-xl shadow-zinc-200/50 p-8 md:p-10 border border-zinc-100">
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-20 h-20 rounded-[28px] mb-4 shadow-xl bg-emerald-500 flex items-center justify-center shadow-emerald-500/20 p-2.5">
-            <Logo size={62} color="white" />
+          <div className="w-22 h-22 rounded-[28px] mb-4 shadow-lg bg-white flex items-center justify-center shadow-emerald-500/10 border border-zinc-100 p-1.5 overflow-hidden">
+            <Logo size={76} />
           </div>
           <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">
             {isLogin ? 'Welcome Back' : 'Create Store'}

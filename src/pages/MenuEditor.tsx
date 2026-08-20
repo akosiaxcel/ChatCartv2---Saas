@@ -163,16 +163,16 @@ export default function MenuEditor() {
               <Link
                 to={`/${profile.slug}`}
                 target="_blank"
-                className="bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 px-4 py-3 rounded-xl font-bold flex items-center gap-2 text-sm transition-all"
+                className="bg-white border-2 border-zinc-900 text-zinc-900 hover:bg-zinc-100 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 text-sm shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all"
               >
-                <Eye className="w-4 h-4 text-emerald-600" />
+                <Eye className="w-4 h-4 text-emerald-700" />
                 Live Preview
               </Link>
             )}
 
             <button
               onClick={() => setEditingCategory({ name: '', icon: '🍽️', order: categories.length })}
-              className="bg-emerald-500 text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 active:scale-[0.95] transition-all text-sm shadow-md"
+              className="bg-emerald-500 text-zinc-950 px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-400 active:translate-x-[1px] active:translate-y-[1px] transition-all text-sm border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Add Category
@@ -181,17 +181,17 @@ export default function MenuEditor() {
         </div>
 
         {categories.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-zinc-100 shadow-sm space-y-4">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+          <div className="bg-white rounded-3xl p-12 text-center border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] space-y-4">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-2xl border-2 border-zinc-900">
               📂
             </div>
             <h3 className="text-xl font-bold text-zinc-900">No categories created yet</h3>
-            <p className="text-zinc-400 text-sm max-w-sm mx-auto">
+            <p className="text-zinc-500 text-sm max-w-sm mx-auto font-medium">
               Start by creating your first category like "Burgers", "Main Dishes", or "Iced Coffee".
             </p>
             <button
               onClick={() => setEditingCategory({ name: '', icon: '☕', order: 0 })}
-              className="bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold text-sm inline-flex items-center gap-2 hover:bg-zinc-800"
+              className="bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold text-sm inline-flex items-center gap-2 hover:bg-zinc-800 border-2 border-zinc-950 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
             >
               <Plus className="w-4 h-4" />
               Create First Category
@@ -202,21 +202,21 @@ export default function MenuEditor() {
             {categories.map((category) => {
               const categoryItems = items.filter(i => i.categoryId === category.id);
               return (
-                <section key={category.id} className="bg-white rounded-2xl md:rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden">
-                  <div className="p-4 md:p-6 bg-zinc-50 border-b border-zinc-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <section key={category.id} className="bg-white rounded-2xl md:rounded-[32px] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden">
+                  <div className="p-4 md:p-6 bg-zinc-50 border-b-2 border-zinc-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3 md:gap-4">
-                      <div className="w-1 h-5 md:h-6 bg-emerald-500 rounded-full" />
+                      <div className="w-1.5 h-6 bg-emerald-500 rounded-full border border-zinc-900" />
                       <h2 className="text-lg md:text-xl font-bold text-zinc-900 flex items-center gap-2">
                         <span className="text-xl md:text-2xl">{category.icon || '🍽️'}</span>
                         {category.name}
-                        <span className="text-xs font-normal text-zinc-400">({categoryItems.length} items)</span>
+                        <span className="text-xs font-semibold text-zinc-500">({categoryItems.length} items)</span>
                       </h2>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-2">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => setEditingCategory(category)}
-                          className="p-2 text-zinc-400 hover:text-zinc-700 hover:bg-white rounded-lg transition-colors"
+                          className="p-2 text-zinc-700 hover:text-zinc-950 hover:bg-white rounded-xl transition-colors border border-zinc-300 hover:border-zinc-900"
                           title="Edit Category"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function MenuEditor() {
                               loadData();
                             }
                           }}
-                          className="p-2 text-zinc-400 hover:text-red-500 hover:bg-white rounded-lg transition-colors"
+                          className="p-2 text-zinc-700 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors border border-zinc-300 hover:border-rose-400"
                           title="Delete Category"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -243,7 +243,7 @@ export default function MenuEditor() {
                           isPopular: false,
                           description: ''
                         })}
-                        className="bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                        className="bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px]"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         Add Item
@@ -253,19 +253,19 @@ export default function MenuEditor() {
 
                   <div className="p-4 md:p-6">
                     {categoryItems.length === 0 ? (
-                      <p className="text-xs text-zinc-400 py-6 text-center italic">
+                      <p className="text-xs text-zinc-500 py-6 text-center italic font-medium">
                         No items in this category. Click "+ Add Item" above to add products.
                       </p>
                     ) : (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {categoryItems.map(item => (
-                          <div key={item.id} className="p-3.5 md:p-4 rounded-2xl border border-zinc-100 bg-white hover:border-zinc-200 transition-all flex gap-3.5 items-center shadow-xs">
-                            <div className="relative w-16 h-16 rounded-xl bg-zinc-50 border border-zinc-100 overflow-hidden shrink-0 group">
+                          <div key={item.id} className="p-3.5 md:p-4 rounded-2xl border-2 border-zinc-900 bg-white hover:shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] transition-all flex gap-3.5 items-center">
+                            <div className="relative w-16 h-16 rounded-xl bg-zinc-50 border-2 border-zinc-900 overflow-hidden shrink-0 group">
                               {item.imageUrl ? (
                                 <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center text-zinc-300">
-                                  <ImageIcon className="w-5 h-5 text-zinc-300" />
+                                <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                                  <ImageIcon className="w-5 h-5 text-zinc-400" />
                                 </div>
                               )}
                               <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
@@ -289,29 +289,29 @@ export default function MenuEditor() {
                                 <div className="flex items-center gap-2 min-w-0">
                                   <h3 className="font-bold text-zinc-900 truncate text-sm md:text-base">{item.name}</h3>
                                   {item.isPopular && (
-                                    <span className="bg-red-50 text-red-600 text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full shrink-0 border border-red-100">
+                                    <span className="bg-amber-100 text-amber-900 text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full shrink-0 border border-amber-400">
                                       Popular
                                     </span>
                                   )}
                                   {item.available === false && (
-                                    <span className="bg-zinc-900 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full shrink-0 border border-zinc-700">
+                                    <span className="bg-zinc-900 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full shrink-0 border border-zinc-900">
                                       Sold Out
                                     </span>
                                   )}
                                 </div>
-                                <span className="font-mono font-bold text-emerald-600 text-sm shrink-0">₱{Number(item.price).toFixed(2)}</span>
+                                <span className="font-mono font-bold text-zinc-900 bg-zinc-100 px-2 py-0.5 rounded-md border border-zinc-900/40 text-xs shrink-0">₱{Number(item.price).toFixed(2)}</span>
                               </div>
                               {item.description && (
-                                <p className="text-[11px] text-zinc-500 line-clamp-1 mt-0.5">{item.description}</p>
+                                <p className="text-[11px] text-zinc-600 line-clamp-1 mt-0.5 font-medium">{item.description}</p>
                               )}
-                              <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-zinc-50">
+                              <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-zinc-200">
                                 <button
                                   onClick={() => saveMenuItem(user!.uid, { id: item.id, available: !item.available }).then(loadData)}
                                   className={cn(
-                                    "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg transition-all active:scale-95 flex items-center gap-1",
+                                    "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg transition-all active:scale-95 flex items-center gap-1 border-2 border-zinc-900",
                                     item.available !== false 
-                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100" 
-                                      : "bg-red-50 text-red-700 border border-red-200 hover:bg-red-100"
+                                      ? "bg-emerald-100 text-emerald-950 shadow-[1px_1px_0px_0px_rgba(24,24,27,1)]" 
+                                      : "bg-red-100 text-red-950 shadow-[1px_1px_0px_0px_rgba(24,24,27,1)]"
                                   )}
                                   title="Click to toggle Available vs Sold Out status"
                                 >
@@ -321,7 +321,7 @@ export default function MenuEditor() {
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() => setEditingItem(item)}
-                                    className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-md hover:bg-zinc-50"
+                                    className="p-1.5 text-zinc-600 hover:text-zinc-900 rounded-md hover:bg-zinc-100 border border-transparent hover:border-zinc-300"
                                     title="Edit Item"
                                   >
                                     <Edit2 className="w-3.5 h-3.5" />
@@ -333,7 +333,7 @@ export default function MenuEditor() {
                                         loadData();
                                       }
                                     }}
-                                    className="p-1.5 text-zinc-400 hover:text-red-500 rounded-md hover:bg-zinc-50"
+                                    className="p-1.5 text-zinc-600 hover:text-red-600 rounded-md hover:bg-red-50 border border-transparent hover:border-red-200"
                                     title="Delete Item"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -354,31 +354,31 @@ export default function MenuEditor() {
 
         {/* Category Modal */}
         {editingCategory && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
-            <div className="bg-white w-full max-w-md rounded-[28px] p-6 md:p-8 shadow-2xl my-auto animate-in zoom-in-95 duration-200">
-              <h2 className="text-xl font-bold mb-5">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+            <div className="bg-white w-full max-w-md rounded-[28px] p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 my-auto animate-in zoom-in-95 duration-200">
+              <h2 className="text-xl font-bold mb-5 text-zinc-900">
                 {editingCategory.id ? 'Edit Category' : 'New Category'}
               </h2>
               <form onSubmit={handleSaveCategory} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700">Category Name</label>
+                  <label className="text-xs font-bold text-zinc-800">Category Name</label>
                   <input
                     type="text"
                     required
                     autoFocus
                     value={editingCategory.name || ''}
                     onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-medium"
+                    className="w-full px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-semibold text-zinc-900"
                     placeholder="e.g. Coffee & Beverages"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-700">Category Icon (Emoji)</label>
+                  <label className="text-xs font-bold text-zinc-800">Category Icon (Emoji)</label>
                   <input
                     type="text"
                     value={editingCategory.icon || ''}
                     onChange={(e) => setEditingCategory({ ...editingCategory, icon: e.target.value })}
-                    className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm"
+                    className="w-full px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-semibold text-zinc-900"
                     placeholder="e.g. ☕ or 🍔"
                   />
                 </div>
@@ -386,13 +386,13 @@ export default function MenuEditor() {
                   <button
                     type="button"
                     onClick={() => setEditingCategory(null)}
-                    className="flex-1 py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-50 rounded-xl"
+                    className="flex-1 py-3 font-bold text-zinc-700 text-sm hover:bg-zinc-100 rounded-xl border-2 border-zinc-900"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm"
+                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px]"
                   >
                     Save Category
                   </button>
@@ -404,14 +404,14 @@ export default function MenuEditor() {
 
         {/* Item Modal */}
         {editingItem && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
-            <div className="bg-white w-full max-w-md rounded-[32px] p-6 md:p-8 shadow-2xl my-auto animate-in zoom-in-95 duration-200">
-              <h2 className="text-xl font-bold mb-5">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+            <div className="bg-white w-full max-w-md rounded-[32px] p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 my-auto animate-in zoom-in-95 duration-200">
+              <h2 className="text-xl font-bold mb-5 text-zinc-900">
                 {editingItem.id ? 'Edit Item' : 'New Item'}
               </h2>
               <form onSubmit={handleSaveItem} className="space-y-4">
                 <div className="flex flex-col items-center mb-4">
-                  <div className="relative w-28 h-28 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group shadow-inner">
+                  <div className="relative w-28 h-28 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-900 overflow-hidden group shadow-inner">
                     {editingItem.imageUrl ? (
                       <img src={editingItem.imageUrl} alt="Item" className="w-full h-full object-cover" />
                     ) : (
@@ -456,21 +456,21 @@ export default function MenuEditor() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Item Name</label>
+                  <label className="text-xs font-bold text-zinc-800">Item Name</label>
                   <input
                     type="text"
                     required
                     value={editingItem.name || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-medium"
+                    className="w-full px-4 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-semibold text-zinc-900"
                     placeholder="e.g. Classic Cheeseburger"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Price (₱)</label>
+                  <label className="text-xs font-bold text-zinc-800">Price (₱)</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold text-sm">₱</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 font-bold text-sm">₱</span>
                     <input
                       type="number"
                       step="0.01"
@@ -478,41 +478,41 @@ export default function MenuEditor() {
                       required
                       value={editingItem.price === undefined || isNaN(editingItem.price) ? '' : editingItem.price}
                       onChange={(e) => setEditingItem({ ...editingItem, price: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-                      className="w-full pl-8 pr-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-mono"
+                      className="w-full pl-8 pr-4 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm font-mono font-bold text-zinc-900"
                       placeholder="0.00"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700">Description</label>
+                  <label className="text-xs font-bold text-zinc-800">Description</label>
                   <textarea
                     value={editingItem.description || ''}
                     onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                    className="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 h-20 resize-none text-xs leading-relaxed"
+                    className="w-full px-4 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 h-20 resize-none text-xs font-medium leading-relaxed text-zinc-900"
                     placeholder="e.g. Grilled beef patty, melted cheddar, lettuce, special sauce"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-1">
-                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-100">
+                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl cursor-pointer hover:bg-zinc-100 font-medium">
                     <input
                       type="checkbox"
                       checked={!!editingItem.isPopular}
                       onChange={(e) => setEditingItem({ ...editingItem, isPopular: e.target.checked })}
-                      className="w-4 h-4 rounded text-red-600 focus:ring-red-500"
+                      className="w-4 h-4 rounded text-red-600 focus:ring-red-500 border-zinc-900"
                     />
-                    <span className="text-xs font-bold text-zinc-700">Popular Item</span>
+                    <span className="text-xs font-bold text-zinc-800">Popular Item</span>
                   </label>
 
-                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-100">
+                  <label className="flex items-center gap-2 p-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl cursor-pointer hover:bg-zinc-100 font-medium">
                     <input
                       type="checkbox"
                       checked={editingItem.available !== false}
                       onChange={(e) => setEditingItem({ ...editingItem, available: e.target.checked })}
-                      className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+                      className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-zinc-900"
                     />
-                    <span className="text-xs font-bold text-zinc-700">Available</span>
+                    <span className="text-xs font-bold text-zinc-800">Available</span>
                   </label>
                 </div>
 
@@ -520,13 +520,13 @@ export default function MenuEditor() {
                   <button
                     type="button"
                     onClick={() => setEditingItem(null)}
-                    className="flex-1 py-3 font-bold text-zinc-500 text-sm hover:bg-zinc-50 rounded-xl"
+                    className="flex-1 py-3 font-bold text-zinc-700 text-sm hover:bg-zinc-100 rounded-xl border-2 border-zinc-900"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm shadow-md"
+                    className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white py-3 rounded-xl font-bold text-sm border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px]"
                   >
                     Save Item
                   </button>

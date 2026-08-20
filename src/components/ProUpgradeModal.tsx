@@ -141,35 +141,35 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
       {/* Backdrop click */}
       <div className="fixed inset-0" onClick={onClose} />
 
-      <div className="relative z-10 bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-2xl border border-zinc-100 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+      <div className="relative z-10 bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] border-2 border-zinc-900 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
         
         {/* Mobile pull handle */}
-        <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+        <div className="w-12 h-1.5 bg-zinc-900 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors z-20"
+          className="absolute top-4 right-4 p-2 rounded-full bg-white text-zinc-900 hover:bg-zinc-100 transition-all border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] z-20 cursor-pointer active:translate-x-[1px] active:translate-y-[1px]"
           aria-label="Close"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Scrollable Container */}
         <div className="overflow-y-auto overscroll-contain flex-1">
           {/* Hero Banner */}
-          <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-5 sm:p-7 text-white relative overflow-hidden shrink-0">
+          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-5 sm:p-7 text-white relative overflow-hidden shrink-0 border-b-2 border-zinc-900">
             <div className="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/30 border border-emerald-400/30 text-emerald-100 text-[11px] font-bold uppercase tracking-wider mb-2.5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/30 border border-emerald-300/40 text-emerald-100 text-[11px] font-bold uppercase tracking-wider mb-2.5">
               <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0" />
               {featureReason ? 'Pro Feature Discovered' : 'Upgrade to Pro Business'}
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight">
               {featureReason ? "Unlock the Full Power of ChatCart" : "Go Pro for only ₱499/mo"}
             </h2>
 
-            <p className="mt-1.5 text-emerald-100 text-xs sm:text-sm leading-relaxed">
+            <p className="mt-1.5 text-emerald-100/90 text-xs sm:text-sm leading-relaxed font-medium">
               {featureReason || "Supercharge your restaurant sales with unlimited dishes, custom branding, and direct Messenger acceleration."}
             </p>
           </div>
@@ -178,30 +178,30 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
             {submitted ? (
               <div className="space-y-4">
                 <div className="text-center space-y-2">
-                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-bold text-zinc-900">Upgrade Request Generated!</h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mx-auto leading-relaxed">
+                  <p className="text-xs sm:text-sm text-zinc-600 max-w-sm mx-auto leading-relaxed font-medium">
                     Details generated for <strong className="text-zinc-900">{storeName || profile?.businessName}</strong>. Send them to WapDev on Messenger for instant verification.
                   </p>
                 </div>
 
                 {/* Auto-Generated Summary Receipt Card */}
-                <div className="bg-zinc-50 border border-dashed border-zinc-300 rounded-2xl p-4 font-mono text-xs space-y-2 relative">
-                  <div className="flex items-center justify-between text-zinc-400 font-bold uppercase tracking-widest text-[10px] pb-1 border-b border-zinc-200">
-                    <span className="flex items-center gap-1">
-                      <Receipt className="w-3.5 h-3.5" /> Auto-Generated Summary
+                <div className="bg-zinc-50 border-2 border-dashed border-zinc-900 rounded-2xl p-4 font-mono text-xs space-y-2 relative">
+                  <div className="flex items-center justify-between text-zinc-600 font-bold uppercase tracking-widest text-[10px] pb-1 border-b-2 border-zinc-200">
+                    <span className="flex items-center gap-1 text-zinc-900 font-black">
+                      <Receipt className="w-3.5 h-3.5 text-zinc-800" /> Auto-Generated Summary
                     </span>
-                    <span className="text-emerald-600 font-bold">READY TO SEND</span>
+                    <span className="text-emerald-700 font-black">READY TO SEND</span>
                   </div>
 
-                  <div className="space-y-1 text-zinc-700 text-[11px] leading-relaxed pt-1">
-                    <div><strong className="text-zinc-900">Store:</strong> {storeName || profile?.businessName}</div>
-                    <div><strong className="text-zinc-900">Plan:</strong> Pro Business (₱499 / mo)</div>
-                    <div><strong className="text-zinc-900">GCash Ref:</strong> <span className="text-emerald-700 font-bold">{refNumber}</span></div>
-                    <div><strong className="text-zinc-900">Amount:</strong> ₱499.00</div>
-                    <div><strong className="text-zinc-900">Recipient:</strong> {PAYMENT_CONFIG.gcashNumber}</div>
+                  <div className="space-y-1 text-zinc-800 text-[11px] leading-relaxed pt-1 font-medium">
+                    <div><strong className="text-zinc-900 font-bold">Store:</strong> {storeName || profile?.businessName}</div>
+                    <div><strong className="text-zinc-900 font-bold">Plan:</strong> Pro Business (₱499 / mo)</div>
+                    <div><strong className="text-zinc-900 font-bold">GCash Ref:</strong> <span className="text-emerald-800 font-bold">{refNumber}</span></div>
+                    <div><strong className="text-zinc-900 font-bold">Amount:</strong> ₱499.00</div>
+                    <div><strong className="text-zinc-900 font-bold">Recipient:</strong> {PAYMENT_CONFIG.gcashNumber}</div>
                   </div>
                 </div>
 
@@ -210,9 +210,9 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <button
                     type="button"
                     onClick={() => handleOpenMessenger(refNumber, storeName)}
-                    className="w-full min-h-[48px] py-3.5 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[48px] py-3.5 px-5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm border-2 border-zinc-950 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4 text-yellow-400" />
                     Send Details to WapDev Messenger
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -220,12 +220,12 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <button
                     type="button"
                     onClick={() => handleCopyUpgradeSummary(refNumber, storeName)}
-                    className="w-full min-h-[44px] py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 active:scale-[0.98]"
+                    className="w-full min-h-[44px] py-2.5 px-4 bg-white hover:bg-zinc-100 text-zinc-900 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-2 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                   >
                     {copiedSummary ? (
                       <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-600">Copied to Clipboard!</span>
+                        <Check className="w-3.5 h-3.5 text-emerald-700" />
+                        <span className="text-emerald-800 font-bold">Copied to Clipboard!</span>
                       </>
                     ) : (
                       <>
@@ -238,7 +238,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-full min-h-[40px] py-2 text-xs font-bold text-zinc-500 hover:text-zinc-800 rounded-xl hover:bg-zinc-50 transition-colors"
+                    className="w-full min-h-[40px] py-2 text-xs font-bold text-zinc-600 hover:text-zinc-900 rounded-xl hover:underline transition-colors cursor-pointer"
                   >
                     Done & Return to Dashboard
                   </button>
@@ -247,41 +247,41 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
             ) : (
               <>
                 {/* Features List */}
-                <div className="space-y-2 bg-zinc-50 p-4 rounded-2xl border border-zinc-100">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                <div className="space-y-2 bg-zinc-50 p-4 rounded-2xl border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                  <p className="text-[11px] font-black uppercase tracking-wider text-zinc-700 mb-1">
                     What you get with Pro Business (₱499/mo):
                   </p>
                   {PRICING_CONFIG.pro.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm text-zinc-700">
-                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                    <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm text-zinc-800 font-medium">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-400">
                         <Check className="w-3 h-3" />
                       </div>
-                      <span className="font-medium">{feat}</span>
+                      <span>{feat}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* Step 1: GCash Details */}
-                <div className="border border-emerald-100 bg-emerald-50/50 rounded-2xl p-4 space-y-2.5">
-                  <div className="flex items-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
-                    <CreditCard className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="border-2 border-zinc-900 bg-emerald-50/50 rounded-2xl p-4 space-y-2.5 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                  <div className="flex items-center gap-2 text-zinc-900 font-black text-xs sm:text-sm">
+                    <CreditCard className="w-4 h-4 text-emerald-700 shrink-0" />
                     Step 1: Send ₱499 via GCash
                   </div>
                   
-                  <div className="bg-white p-3.5 rounded-xl border border-emerald-200 flex items-center justify-between shadow-2xs gap-2">
+                  <div className="bg-white p-3.5 rounded-xl border-2 border-zinc-900 flex items-center justify-between shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] gap-2">
                     <div className="min-w-0">
-                      <div className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">GCash Account</div>
+                      <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">GCash Account</div>
                       <div className="font-mono text-sm sm:text-base font-black text-zinc-900 truncate">{PAYMENT_CONFIG.gcashNumber}</div>
-                      <div className="text-[11px] text-emerald-700 font-semibold">{PAYMENT_CONFIG.gcashAccountName}</div>
+                      <div className="text-[11px] text-emerald-800 font-bold">{PAYMENT_CONFIG.gcashAccountName}</div>
                     </div>
                     <button
                       type="button"
                       onClick={handleCopyGcash}
-                      className="min-h-[40px] px-3.5 py-2 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 active:scale-95"
+                      className="min-h-[40px] px-3.5 py-2 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 border-2 border-zinc-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                     >
                       {copiedGcash ? (
                         <>
-                          <Check className="w-3.5 h-3.5" /> Copied
+                          <Check className="w-3.5 h-3.5 text-emerald-400" /> Copied
                         </>
                       ) : (
                         <>
@@ -296,8 +296,8 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                 <form onSubmit={handleSubmitPayment} className="space-y-4">
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                        <Store className="w-3.5 h-3.5 text-emerald-600" />
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-800 mb-1.5 flex items-center gap-1.5">
+                        <Store className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Step 2: Store / Business Name <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
@@ -306,13 +306,13 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                         value={storeName}
                         onChange={(e) => setStoreName(e.target.value)}
                         required
-                        className="w-full min-h-[46px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
+                        className="w-full min-h-[46px] px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-zinc-900 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
-                        <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-800 mb-1.5 flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Step 3: GCash Reference Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
@@ -321,18 +321,18 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                         value={refNumber}
                         onChange={(e) => setRefNumber(e.target.value)}
                         required
-                        className="w-full min-h-[46px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
+                        className="w-full min-h-[46px] px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-zinc-900 text-sm font-mono font-bold focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"
                       />
                     </div>
                   </div>
 
-                  {error && <p className="text-xs text-rose-500 font-medium">{error}</p>}
+                  {error && <p className="text-xs text-rose-600 font-bold p-2 bg-red-50 border border-red-200 rounded-lg">{error}</p>}
 
                   <div className="space-y-2 pt-1">
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full min-h-[48px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl font-bold text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                      className="w-full min-h-[48px] py-3.5 px-4 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white rounded-xl font-bold text-sm border-2 border-zinc-950 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2 active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                     >
                       {submitting ? 'Submitting...' : 'Submit & Generate Upgrade Message'}
                       <Send className="w-4 h-4" />
@@ -341,15 +341,15 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     <button
                       type="button"
                       onClick={() => handleOpenMessenger(refNumber, storeName)}
-                      className="w-full min-h-[44px] py-2.5 px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98]"
+                      className="w-full min-h-[44px] py-2.5 px-4 bg-white hover:bg-zinc-100 text-zinc-900 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px] cursor-pointer"
                     >
                       <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
                       Chat with WapDev Support
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-400 text-center pt-1 pb-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <div className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-500 text-center pt-1 pb-1 font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                     Auto-formatted details • 1-Click copy & send
                   </div>
                 </form>

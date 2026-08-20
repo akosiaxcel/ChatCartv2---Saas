@@ -305,7 +305,7 @@ export default function Dashboard() {
         </div>
 
         {!isSetupComplete && (
-          <div className="bg-zinc-900 rounded-[32px] p-8 text-white overflow-hidden relative shadow-lg">
+          <div className="bg-zinc-900 rounded-[32px] p-8 text-white overflow-hidden relative shadow-lg border-2 border-zinc-900">
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -330,24 +330,24 @@ export default function Dashboard() {
                   <button
                     key={step.id}
                     onClick={step.action}
-                    className={`p-5 rounded-2xl text-left transition-all border ${
+                    className={`p-5 rounded-2xl text-left transition-all border-2 ${
                       step.isComplete 
-                        ? 'bg-zinc-800/50 border-zinc-700/50 opacity-70' 
-                        : 'bg-zinc-800 border-zinc-700 hover:border-emerald-500/50 group'
+                        ? 'bg-zinc-800/60 border-zinc-700 opacity-80' 
+                        : 'bg-zinc-800 border-zinc-600 hover:border-emerald-400 group shadow-xs'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
                       {step.isComplete ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                       ) : (
-                        <Circle className="w-5 h-5 text-zinc-600 group-hover:text-emerald-500 transition-colors" />
+                        <Circle className="w-5 h-5 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
                       )}
-                      {!step.isComplete && <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:translate-x-1 transition-all" />}
+                      {!step.isComplete && <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:translate-x-1 transition-all" />}
                     </div>
                     <h3 className={`font-bold text-sm mb-1 ${step.isComplete ? 'text-zinc-300' : 'text-white'}`}>
                       {step.title}
                     </h3>
-                    <p className="text-xs text-zinc-500 leading-relaxed">
+                    <p className="text-xs text-zinc-400 leading-relaxed">
                       {step.description}
                     </p>
                   </button>
@@ -361,17 +361,17 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Profile Form */}
-          <div id="business-profile-form" className="bg-white p-8 rounded-[32px] border border-zinc-100 shadow-sm">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Store className="w-5 h-5 text-emerald-500" />
+          <div id="business-profile-form" className="bg-white p-8 rounded-[32px] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-900">
+              <Store className="w-5 h-5 text-emerald-600" />
               Business Profile
             </h2>
             <form onSubmit={handleSave} className="space-y-5">
               <div className="flex justify-center mb-6">
                 <div className="flex flex-col items-center">
-                  <div className="relative w-24 h-24 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 overflow-hidden group shadow-inner">
+                  <div className="relative w-24 h-24 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-900 overflow-hidden group shadow-inner">
                     {!isPro && (
-                      <div className="absolute top-1.5 right-1.5 z-10 bg-amber-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow-xs">
+                      <div className="absolute top-1.5 right-1.5 z-10 bg-amber-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded border border-amber-700">
                         PRO
                       </div>
                     )}
@@ -402,7 +402,7 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setProfile({ ...profile, logoUrl: '' })}
-                      className="mt-1.5 text-[10px] font-bold text-red-500 uppercase hover:underline"
+                      className="mt-1.5 text-[10px] font-bold text-red-600 uppercase hover:underline"
                     >
                       Remove Logo
                     </button>
@@ -414,7 +414,7 @@ export default function Dashboard() {
                         placeholder="Or paste Logo URL (https://...)"
                         value={profile?.logoUrl?.startsWith('data:') ? '' : (profile?.logoUrl || '')}
                         onChange={(e) => setProfile({ ...profile!, logoUrl: e.target.value.trim() })}
-                        className="w-full text-[11px] px-3 py-1.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-hidden text-center"
+                        className="w-full text-[11px] px-3 py-1.5 bg-zinc-50 border-2 border-zinc-900 rounded-lg text-zinc-900 focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:outline-hidden text-center font-medium"
                       />
                     </div>
                   )}
@@ -422,75 +422,75 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-zinc-700">Business Name</label>
+                <label className="text-sm font-bold text-zinc-800">Business Name</label>
                 <input
                   type="text"
                   required
                   value={profile?.businessName || ''}
                   onChange={(e) => setProfile({ ...profile!, businessName: e.target.value })}
-                  className="w-full px-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-medium"
+                  className="w-full px-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-semibold text-zinc-900"
                   placeholder="e.g. ChatCart Bistro"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-zinc-700 flex items-center justify-between">
+                <label className="text-sm font-bold text-zinc-800 flex items-center justify-between">
                   <span>Custom URL Handle</span>
-                  <span className="text-[10px] text-zinc-400 font-normal">e.g. your-shop</span>
+                  <span className="text-[10px] text-zinc-500 font-semibold">e.g. your-shop</span>
                 </label>
                 <div className="relative">
-                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
                     type="text"
                     value={customSlug}
                     onChange={(e) => setCustomSlug(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-mono"
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-mono font-semibold text-zinc-900"
                     placeholder="my-bistro"
                   />
                 </div>
-                <p className="text-[10px] text-zinc-400 px-1">
-                  Public URL: <span className="font-mono text-zinc-600">{window.location.origin}/{customSlug || profile?.slug || 'your-shop'}</span>
+                <p className="text-[10px] text-zinc-500 px-1 font-medium">
+                  Public URL: <span className="font-mono text-zinc-800 font-bold">{window.location.origin}/{customSlug || profile?.slug || 'your-shop'}</span>
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-zinc-700">Messenger Page Username</label>
+                  <label className="text-sm font-bold text-zinc-800">Messenger Page Username</label>
                   <a 
                     href="https://www.facebook.com/help/1047811435279151" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-[10px] font-bold text-emerald-600 hover:underline flex items-center gap-1"
+                    className="text-[10px] font-bold text-emerald-700 hover:underline flex items-center gap-1"
                   >
                     <Info className="w-3 h-3" />
                     How to find?
                   </a>
                 </div>
                 <div className="relative">
-                  <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
                     type="text"
                     required
                     value={profile?.messengerPageUsername || ''}
                     onChange={(e) => setProfile({ ...profile!, messengerPageUsername: e.target.value.replace(/^@/, '').trim() })}
-                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-medium"
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 border-2 border-zinc-900 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-sm font-semibold text-zinc-900"
                     placeholder="ChatCartDemo"
                   />
                 </div>
-                <p className="text-[10px] text-zinc-400 px-1 leading-relaxed">
-                  Enter your Page username without '@'. Customers' orders will direct to <span className="font-mono text-zinc-600">m.me/{profile?.messengerPageUsername || 'username'}</span>
+                <p className="text-[10px] text-zinc-500 px-1 leading-relaxed font-medium">
+                  Enter your Page username without '@'. Customers' orders will direct to <span className="font-mono text-zinc-900 font-bold">m.me/{profile?.messengerPageUsername || 'username'}</span>
                 </p>
               </div>
 
               {message && (
-                <div className="p-3 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-100 flex items-center gap-2">
-                  <Check className="w-4 h-4" />
+                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border-2 border-emerald-600 flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-700" />
                   {message}
                 </div>
               )}
 
               {errorMessage && (
-                <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl border border-red-100">
+                <div className="p-3 bg-red-50 text-red-800 text-xs font-bold rounded-xl border-2 border-red-600">
                   {errorMessage}
                 </div>
               )}
@@ -498,7 +498,7 @@ export default function Dashboard() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full bg-zinc-900 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-800 active:scale-[0.98] transition-all disabled:opacity-50 shadow-md"
+                className="w-full bg-zinc-900 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-800 active:translate-x-[1px] active:translate-y-[1px] transition-all disabled:opacity-50 border-2 border-zinc-950 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
               >
                 {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                 Save Profile Changes
@@ -508,28 +508,28 @@ export default function Dashboard() {
 
           {/* Quick Links & QR Code */}
           <div className="space-y-6">
-            <div className="bg-white p-8 rounded-[32px] border border-zinc-100 shadow-sm">
+            <div className="bg-white p-8 rounded-[32px] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <QrCode className="w-5 h-5 text-emerald-500" />
+                <h2 className="text-xl font-bold flex items-center gap-2 text-zinc-900">
+                  <QrCode className="w-5 h-5 text-emerald-600" />
                   Public Menu & QR Code
                 </h2>
                 <Link
                   to={profile?.slug ? `/${profile.slug}` : `/menu/${user?.uid}`}
                   target="_blank"
-                  className="p-2 text-zinc-400 hover:text-emerald-600 hover:bg-zinc-50 rounded-xl transition-all"
+                  className="p-2 text-zinc-700 hover:text-emerald-700 hover:bg-zinc-100 rounded-xl transition-all border border-zinc-200 hover:border-zinc-900"
                   title="Open Public Menu in new tab"
                 >
                   <ExternalLink className="w-5 h-5" />
                 </Link>
               </div>
               
-              <p className="text-sm text-zinc-500 mb-6 leading-relaxed">
+              <p className="text-sm text-zinc-600 mb-6 leading-relaxed font-medium">
                 Customers can scan this QR code at their table or visit your dedicated web link to place orders.
               </p>
 
               <div className="flex flex-col items-center gap-6">
-                <div className="p-6 bg-white rounded-3xl border border-zinc-100 shadow-sm">
+                <div className="p-5 bg-white rounded-3xl border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                   <QRCodeCanvas
                     id="menu-qr-code"
                     value={menuUrl}
@@ -540,7 +540,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="w-full space-y-3">
-                  <div className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-100 break-all font-mono text-xs text-zinc-600 text-center select-all">
+                  <div className="p-3.5 bg-zinc-50 rounded-2xl border-2 border-zinc-900 break-all font-mono text-xs text-zinc-900 font-bold text-center select-all">
                     {menuUrl}
                   </div>
                   
@@ -548,19 +548,19 @@ export default function Dashboard() {
                     <button
                       onClick={copyMenuUrl}
                       className={cn(
-                        "py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border transition-all active:scale-[0.98]",
+                        "py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all",
                         copiedLink 
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                          : "bg-zinc-50 text-zinc-800 border-zinc-200 hover:bg-zinc-100"
+                          ? "bg-emerald-100 text-emerald-950" 
+                          : "bg-white text-zinc-900 hover:bg-zinc-100"
                       )}
                     >
-                      {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      {copiedLink ? <Check className="w-4 h-4 text-emerald-700" /> : <Copy className="w-4 h-4" />}
                       {copiedLink ? 'Copied!' : 'Copy Link'}
                     </button>
 
                     <button
                       onClick={downloadQRCode}
-                      className="py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-all"
+                      className="py-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all"
                     >
                       <Download className="w-4 h-4" />
                       Download QR
@@ -570,12 +570,12 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="bg-emerald-50 p-6 rounded-[32px] border border-emerald-100">
-              <h3 className="font-bold text-emerald-900 flex items-center gap-2 mb-2">
-                <MessageCircle className="w-4 h-4" />
+            <div className="bg-emerald-50 p-6 rounded-[32px] border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+              <h3 className="font-bold text-emerald-950 flex items-center gap-2 mb-2">
+                <MessageCircle className="w-4 h-4 text-emerald-700" />
                 Messenger Ordering Tip
               </h3>
-              <p className="text-xs text-emerald-800 leading-relaxed">
+              <p className="text-xs text-emerald-900 leading-relaxed font-medium">
                 When customers build their cart and click "Order via Messenger", ChatCart encodes their exact order summary and opens your Facebook Page chat directly.
               </p>
             </div>
