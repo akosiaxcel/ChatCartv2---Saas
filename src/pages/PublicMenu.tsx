@@ -364,8 +364,8 @@ export default function PublicMenu() {
           >
             <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Powered by</span>
             <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs">
-                <Logo size={14} color="white" />
+              <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs p-0.5">
+                <Logo size={18} color="white" />
               </div>
               <span className="font-bold text-zinc-800 text-sm tracking-tight group-hover:text-emerald-600 transition-colors">ChatCart</span>
             </div>

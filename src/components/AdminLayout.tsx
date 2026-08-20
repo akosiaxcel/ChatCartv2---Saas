@@ -60,8 +60,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Header */}
       <header className="md:hidden bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <Logo size={24} color="white" />
+          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 p-1">
+            <Logo size={30} color="white" />
           </div>
           <span className="font-bold text-lg tracking-tight">ChatCart</span>
           {isSuperAdminUser ? (
@@ -89,8 +89,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}>
         <div className="p-6 hidden md:flex items-center justify-between border-b border-zinc-100">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <Logo size={28} color="white" />
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 p-1.5">
+              <Logo size={34} color="white" />
             </div>
             <div>
               <span className="font-bold text-lg tracking-tight block text-zinc-900">ChatCart</span>

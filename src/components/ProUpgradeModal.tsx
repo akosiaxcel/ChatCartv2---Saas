@@ -298,7 +298,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
                         <Store className="w-3.5 h-3.5 text-emerald-600" />
-                        Step 2: Store / Business Name
+                        <span>Step 2: Store / Business Name <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
                         type="text"
@@ -311,8 +311,9 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                        Step 3: GCash Reference Number
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Step 3: GCash Reference Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
                         type="text"

@@ -28,7 +28,7 @@ export const PRICING_CONFIG = {
 
 export const PAYMENT_CONFIG = {
   gcashNumber: '09568302354',
-  gcashAccountName: 'Axcel John P. / WapDev',
+  gcashAccountName: 'A**** J*** P********',
   messengerUrl: 'https://m.me/61552140432076',
   supportEmail: 'axceljohnpatriarca@gmail.com',
   amount: 499,

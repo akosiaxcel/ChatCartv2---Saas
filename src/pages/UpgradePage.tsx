@@ -128,6 +128,11 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
       return;
     }
 
+    if (!ownerContact.trim()) {
+      setError('Please enter your owner email or contact number');
+      return;
+    }
+
     if (!refNumber.trim()) {
       setError('Please enter your GCash Reference Number');
       return;
@@ -166,8 +171,8 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
       <header className="bg-white border-b border-zinc-100 sticky top-0 z-30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs">
-              <Logo size={20} color="white" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-xs p-1">
+              <Logo size={26} color="white" />
             </div>
             <span className="font-extrabold text-zinc-900 text-lg tracking-tight">ChatCart</span>
             <span className="bg-amber-100 text-amber-900 text-[10px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
@@ -409,7 +414,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
                         <Store className="w-3.5 h-3.5 text-emerald-600" />
-                        Store / Restaurant Name
+                        <span>Store / Restaurant Name <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
                         type="text"
@@ -422,14 +427,16 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                        Owner Email or Contact Number
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
+                        <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Owner Email or Contact Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
                         type="text"
                         placeholder="e.g. owner@email.com or 0917XXXXXXX"
                         value={ownerContact}
                         onChange={(e) => setOwnerContact(e.target.value)}
+                        required
                         className="w-full min-h-[48px] px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 text-sm font-medium focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-hidden transition-all"
                       />
                     </div>
@@ -437,7 +444,7 @@ Hi WapDev! I have submitted my GCash payment details for "${finalStoreName}". Pl
                     <div>
                       <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
                         <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
-                        GCash Reference Number
+                        <span>GCash Reference Number <span className="text-rose-500 font-bold">*</span></span>
                       </label>
                       <input
                         type="text"
