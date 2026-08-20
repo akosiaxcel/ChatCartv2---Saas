@@ -11,6 +11,7 @@ import { uploadLogo } from '../firebase/storage';
 import { Category, MenuItem, cn } from '../types';
 import { ProUpgradeModal } from '../components/ProUpgradeModal';
 import { PRICING_CONFIG, PAYMENT_CONFIG } from '../lib/constants';
+import brandMarkSrc from '../assets/images/brand_mark_logo_1787201273034.jpg';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -537,7 +538,7 @@ export default function Dashboard() {
                     level="H"
                     includeMargin={true}
                     imageSettings={{
-                      src: profile?.logoUrl || '/brand-mark.png',
+                      src: profile?.logoUrl || brandMarkSrc,
                       height: 38,
                       width: 38,
                       excavate: true,

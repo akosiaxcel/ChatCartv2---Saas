@@ -1,4 +1,5 @@
 import React from 'react';
+import brandMarkSrc from '../assets/images/brand_mark_logo_1787201273034.jpg';
 
 interface LogoProps {
   className?: string;
@@ -13,7 +14,7 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 36 }) => {
       style={{ width: `${size}px`, height: `${size}px` }}
     >
       <img
-        src="/brand-mark.png"
+        src={brandMarkSrc}
         alt="ChatCart Brand Mark"
         width={size}
         height={size}
@@ -21,7 +22,9 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 36 }) => {
         referrerPolicy="no-referrer"
         onError={(e) => {
           const target = e.currentTarget;
-          if (!target.src.endsWith('brand-mark.jpg')) {
+          if (target.src !== '/brand-mark.png' && !target.src.endsWith('/brand-mark.png')) {
+            target.src = '/brand-mark.png';
+          } else if (target.src !== '/brand-mark.jpg' && !target.src.endsWith('/brand-mark.jpg')) {
             target.src = '/brand-mark.jpg';
           }
         }}
