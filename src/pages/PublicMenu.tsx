@@ -212,11 +212,11 @@ export default function PublicMenu() {
                 exit={{ opacity: 0, x: -10 }}
                 className="flex items-center gap-3 min-w-0"
               >
-                <div className="w-10 h-10 rounded-2xl border-2 border-zinc-900 flex items-center justify-center overflow-hidden bg-zinc-50 shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                <div className="w-10 h-10 rounded-2xl border-2 border-zinc-900 flex items-center justify-center overflow-hidden bg-white shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                   {profile.logoUrl ? (
                     <img src={profile.logoUrl} alt={profile.businessName} className="w-full h-full object-cover" />
                   ) : (
-                    <Utensils className="w-5 h-5 text-zinc-600" />
+                    <Logo size={30} />
                   )}
                 </div>
                 <h1 className="text-lg sm:text-xl font-black text-zinc-900 leading-tight uppercase tracking-tight truncate">

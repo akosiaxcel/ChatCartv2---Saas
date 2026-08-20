@@ -536,6 +536,12 @@ export default function Dashboard() {
                     size={220}
                     level="H"
                     includeMargin={true}
+                    imageSettings={{
+                      src: profile?.logoUrl || '/brand-mark.png',
+                      height: 38,
+                      width: 38,
+                      excavate: true,
+                    }}
                   />
                 </div>
 

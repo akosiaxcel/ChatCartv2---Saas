@@ -14,11 +14,17 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 36 }) => {
     >
       <img
         src="/brand-mark.png"
-        alt="ChatCart Logo"
+        alt="ChatCart Brand Mark"
         width={size}
         height={size}
         className="w-full h-full object-cover scale-[1.32] transform select-none"
         referrerPolicy="no-referrer"
+        onError={(e) => {
+          const target = e.currentTarget;
+          if (!target.src.endsWith('brand-mark.jpg')) {
+            target.src = '/brand-mark.jpg';
+          }
+        }}
       />
     </div>
   );
