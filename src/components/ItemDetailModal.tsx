@@ -115,11 +115,6 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                 <div className="text-xl font-mono font-black text-zinc-900 bg-zinc-100 px-2.5 py-0.5 rounded-lg border border-zinc-900/40 inline-block">
                   {currency}{Number(item.price).toFixed(2)}
                 </div>
-                {isSoldOut && (
-                  <span className="text-xs font-black text-red-700 bg-red-100 border-2 border-red-500 px-2.5 py-0.5 rounded-full">
-                    Currently Sold Out
-                  </span>
-                )}
               </div>
             </div>
 

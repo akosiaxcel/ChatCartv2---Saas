@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { useAuth } from '../context/AuthContext';
 import { updateBusinessProfile, getBusinessProfile, generateUniqueSlug } from '../firebase/firestore';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Loader2, Store, ArrowLeft, Sparkles, CreditCard } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Store, ArrowLeft, Sparkles, CreditCard, CheckCircle2, X, KeyRound } from 'lucide-react';
 import { Logo } from '../components/Logo';
 
 export default function Login() {
@@ -27,6 +27,14 @@ export default function Login() {
   const [gcashRef, setGcashRef] = useState(urlPaymentRef);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Forgot Password modal state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [forgotError, setForgotError] = useState('');
+
   const navigate = useNavigate();
 
   // Auto redirect if already logged in
@@ -167,6 +175,32 @@ export default function Login() {
     }
   };
 
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const targetEmail = (forgotEmail || email).trim();
+    if (!targetEmail) {
+      setForgotError("Please enter your registered email address.");
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError('');
+    setForgotSuccess('');
+    try {
+      await sendPasswordResetEmail(auth, targetEmail);
+      setForgotSuccess(`We have dispatched a password reset link to ${targetEmail}. Please check your inbox and spam folder.`);
+    } catch (err: any) {
+      console.error("Forgot password error:", err);
+      if (err.code === 'auth/user-not-found') {
+        setForgotError("No account found with this email address.");
+      } else {
+        setForgotError(err.message || "Failed to send reset email. Please try again.");
+      }
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center p-6 relative">
       {/* Landing page link / Back button */}
@@ -259,7 +293,23 @@ export default function Login() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-700 ml-1">Password</label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-zinc-700 ml-1">Password</label>
+                {isLogin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(email);
+                      setForgotError('');
+                      setForgotSuccess('');
+                      setShowForgotModal(true);
+                    }}
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                 <input
@@ -330,6 +380,82 @@ export default function Login() {
           </button>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-xs animate-fade-in">
+          <div className="fixed inset-0" onClick={() => setShowForgotModal(false)} />
+          <div className="relative z-10 bg-white w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl border-2 border-zinc-900 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-zinc-900">Reset Your Password</h3>
+                  <p className="text-xs text-zinc-500">We'll send you an instant reset link</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(false)}
+                className="p-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleForgotSubmit} className="space-y-3.5 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-zinc-700 ml-1">Registered Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-zinc-900"
+                    placeholder="name@business.com"
+                    autoFocus
+                  />
+                </div>
+              </div>
+
+              {forgotSuccess && (
+                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                  <span>{forgotSuccess}</span>
+                </div>
+              )}
+
+              {forgotError && (
+                <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl border border-red-200">
+                  {forgotError}
+                </div>
+              )}
+
+              <div className="space-y-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={forgotLoading || !forgotEmail.trim()}
+                  className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+                >
+                  {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
+                  Send Password Reset Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotModal(false)}
+                  className="w-full py-2.5 text-xs font-bold text-zinc-500 hover:text-zinc-800 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

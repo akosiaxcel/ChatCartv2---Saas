@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { db, auth } from '../firebase/config';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { setBusinessStatus, deleteBusiness, updateBusinessProfile } from '../firebase/firestore';
 import AdminLayout from '../components/AdminLayout';
 import { BusinessProfile } from '../types';
@@ -32,7 +33,11 @@ import {
   UserCheck,
   UserX,
   Edit3,
-  Plus
+  Plus,
+  KeyRound,
+  MessageCircle,
+  Lock,
+  X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -61,6 +66,13 @@ export default function SuperAdmin() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'pending_payment' | 'pro' | 'grace_period' | 'overdue' | 'starter'>('all');
   const [copiedRef, setCopiedRef] = useState<string | null>(null);
   const [expandedBilling, setExpandedBilling] = useState<Record<string, boolean>>({});
+  
+  // Password Reset & Messenger Recovery modal state
+  const [resetModalBiz, setResetModalBiz] = useState<BusinessProfile | null>(null);
+  const [resetEmailSending, setResetEmailSending] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [resetModalError, setResetModalError] = useState<string | null>(null);
+  const [copiedMessenger, setCopiedMessenger] = useState(false);
 
   const isSuperAdmin = user?.email === 'axceljohnpatriarca@gmail.com';
 
@@ -263,6 +275,44 @@ export default function SuperAdmin() {
     } finally {
       setActionLoading(prev => ({ ...prev, [uid]: false }));
     }
+  };
+
+  // Dispatch password reset email on behalf of client
+  const handleSendResetEmailFromAdmin = async (biz: BusinessProfile) => {
+    if (!biz.email) {
+      setResetModalError("This client does not have a registered email address on file.");
+      return;
+    }
+    setResetEmailSending(true);
+    setResetModalError(null);
+    try {
+      await sendPasswordResetEmail(auth, biz.email);
+      setResetEmailSent(true);
+      setTimeout(() => setResetEmailSent(false), 5000);
+    } catch (err: any) {
+      console.error("Admin reset email error:", err);
+      setResetModalError(err.message || "Failed to dispatch reset email.");
+    } finally {
+      setResetEmailSending(false);
+    }
+  };
+
+  // Copy ready-to-send Messenger reply for client recovery
+  const handleCopyMessengerReply = (biz: BusinessProfile) => {
+    const loginUrl = `${window.location.origin}/login`;
+    const text = `Hi ${biz.businessName || 'there'}! 👋
+
+Here is your ChatCart account information:
+🔗 Login Page: ${loginUrl}
+📧 Registered Email: ${biz.email || 'Your registered email'}
+
+If you forgot your password, I have dispatched a password reset link to your email, or you can click "Forgot Password?" directly on the login page anytime.
+
+Let me know once you are able to sign in!`;
+
+    navigator.clipboard.writeText(text);
+    setCopiedMessenger(true);
+    setTimeout(() => setCopiedMessenger(false), 3000);
   };
 
   // Update Pro Upgrade Date manually
@@ -650,6 +700,125 @@ WapDev ChatCart Billing Support
           </div>
         )}
 
+        {/* Password Reset & Messenger Recovery Modal */}
+        {resetModalBiz && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-zinc-950/60 backdrop-blur-xs animate-fade-in">
+            <div className="fixed inset-0" onClick={() => setResetModalBiz(null)} />
+            
+            <div className="relative z-10 bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] p-6 sm:p-7 shadow-2xl space-y-5 animate-in slide-in-from-bottom sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200 border border-zinc-100">
+              <div className="w-12 h-1.5 bg-zinc-300 rounded-full mx-auto sm:hidden shrink-0 mb-1" />
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                    <KeyRound className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-zinc-900">Password Recovery & Support</h3>
+                    <p className="text-xs text-zinc-500">{resetModalBiz.businessName}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setResetModalBiz(null)}
+                  className="p-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Client Info Summary */}
+              <div className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-200 text-xs space-y-1.5 font-medium">
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Registered Email:</span>
+                  <span className="font-bold text-zinc-900">{resetModalBiz.email || 'No email registered'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Messenger Handle:</span>
+                  <span className="font-mono font-bold text-zinc-900">@{resetModalBiz.messengerPageUsername || 'none'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-500">Store URL:</span>
+                  <span className="font-mono text-zinc-700">/{resetModalBiz.slug || 'menu'}</span>
+                </div>
+              </div>
+
+              {/* Option 1: Send Password Reset Link */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
+                  <span>1. Dispatch Reset Email</span>
+                  <span className="text-[10px] text-zinc-400 font-normal">Official Firebase Link</span>
+                </label>
+                <button
+                  type="button"
+                  disabled={resetEmailSending || !resetModalBiz.email}
+                  onClick={() => handleSendResetEmailFromAdmin(resetModalBiz)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+                >
+                  {resetEmailSending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : resetEmailSent ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <KeyRound className="w-4 h-4 text-amber-400" />
+                  )}
+                  {resetEmailSent ? `Reset Link Sent to ${resetModalBiz.email}!` : `Send Password Reset Email`}
+                </button>
+              </div>
+
+              {/* Option 2: Copy Messenger Reply */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-700">
+                    2. Messenger Reply (1-Tap Copy)
+                  </label>
+                  <span className="text-[10px] text-emerald-700 font-semibold">For Facebook Chat</span>
+                </div>
+
+                <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200 text-xs font-mono text-zinc-800 leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap select-all">
+                  {`Hi ${resetModalBiz.businessName || 'there'}! 👋\n\nHere is your ChatCart login info:\n🔗 Login: ${window.location.origin}/login\n📧 Email: ${resetModalBiz.email || 'your email'}\n\nYou can click "Forgot Password?" directly on the login page anytime!`}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleCopyMessengerReply(resetModalBiz)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  {copiedMessenger ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4" />}
+                  {copiedMessenger ? 'Copied to Clipboard!' : 'Copy Messenger Reply Text'}
+                </button>
+              </div>
+
+              {/* Manual Firebase Console Note */}
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900 space-y-1">
+                <p className="font-bold flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-amber-700" />
+                  Manual Console Override:
+                </p>
+                <p className="text-amber-800 leading-normal">
+                  If the client has no email access, open <strong>Firebase Console &gt; Authentication &gt; Users &gt; Change Password</strong> to type any temporary password manually.
+                </p>
+              </div>
+
+              {resetModalError && (
+                <div className="p-3 bg-red-50 text-red-700 text-xs font-bold rounded-xl border border-red-200">
+                  {resetModalError}
+                </div>
+              )}
+
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => setResetModalBiz(null)}
+                  className="w-full py-2.5 rounded-xl border border-zinc-200 font-bold text-xs text-zinc-600 hover:bg-zinc-50 transition-colors"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {successMessage && (
           <div className="bg-emerald-50 text-emerald-700 p-4 rounded-2xl border border-emerald-100 flex items-center gap-3 animate-in fade-in duration-300">
             <CheckCircle className="w-5 h-5 shrink-0" />
@@ -900,6 +1069,19 @@ WapDev ChatCart Billing Support
                         >
                           <ExternalLink className="w-4 h-4" />
                         </Link>
+
+                        {/* Password & Messenger Recovery */}
+                        <button
+                          onClick={() => {
+                            setResetModalBiz(biz);
+                            setResetModalError(null);
+                            setResetEmailSent(false);
+                          }}
+                          className="p-2 text-zinc-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center border border-transparent hover:border-amber-200"
+                          title="Password Reset & Messenger Support"
+                        >
+                          <KeyRound className="w-4 h-4" />
+                        </button>
 
                         {/* Delete registration */}
                         <button

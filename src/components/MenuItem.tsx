@@ -58,19 +58,8 @@ export default function MenuItem({ item, quantity, onAdd, onRemove, onClick, cur
           )}
         </div>
 
-        {/* Action Button: Sold Out Pill or Quick Add Button */}
-        {isSoldOut ? (
-          <div 
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            className="absolute bottom-2.5 right-2.5 bg-zinc-900 text-zinc-200 text-[10px] font-black uppercase px-2.5 py-1 rounded-full border-2 border-zinc-950 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
-          >
-            Sold Out
-          </div>
-        ) : (
-          /* Quick Add Button */
+        {/* Quick Add Button or Disabled Indicator */}
+        {!isSoldOut && (
           <button
             type="button"
             onClick={(e) => {

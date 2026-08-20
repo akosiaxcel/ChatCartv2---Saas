@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getBusinessProfile, updateBusinessProfile, generateUniqueSlug } from '../firebase/firestore';
 import AdminLayout from '../components/AdminLayout';
 import { BusinessProfile } from '../types';
-import { Store, MessageCircle, Save, Loader2, ExternalLink, Clock, XCircle, Download, QrCode, Info, CheckCircle2, Circle, ArrowRight, Sparkles, Image as ImageIcon, Plus, Copy, Check, Globe, Shield, CreditCard } from 'lucide-react';
+import { Store, MessageCircle, Save, Loader2, ExternalLink, Clock, XCircle, Download, QrCode, Info, CheckCircle2, Circle, ArrowRight, Sparkles, Image as ImageIcon, Plus, Copy, Check, Globe, Shield, CreditCard, KeyRound, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
 import { getCategories, getMenuItems } from '../firebase/firestore';
@@ -12,6 +12,8 @@ import { Category, MenuItem, cn } from '../types';
 import { ProUpgradeModal } from '../components/ProUpgradeModal';
 import { PRICING_CONFIG, PAYMENT_CONFIG } from '../lib/constants';
 import brandMarkSrc from '../assets/images/brand_mark_logo_1787201273034.jpg';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebase/config';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -29,6 +31,75 @@ export default function Dashboard() {
   const [copiedLink, setCopiedLink] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState('');
+
+  // Password & Security State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+
+  const isGoogleUser = user?.providerData?.some(p => p.providerId === 'google.com') && !user?.providerData?.some(p => p.providerId === 'password');
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      // If current password provided, re-authenticate to prevent auth/requires-recent-login
+      if (currentPassword && user.email) {
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+      }
+
+      await updatePassword(user, newPassword);
+      setPasswordSuccess('Your password has been successfully updated!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => setPasswordSuccess(''), 5000);
+    } catch (err: any) {
+      console.error('Password update error:', err);
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        setPasswordError('Incorrect current password. Please re-enter your current password.');
+      } else if (err.code === 'auth/requires-recent-login') {
+        setPasswordError('For security, please enter your current password above to confirm this change.');
+      } else {
+        setPasswordError(err.message || 'Failed to update password.');
+      }
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
+  const handleSendResetEmail = async () => {
+    if (!user?.email) return;
+    setPasswordError('');
+    try {
+      await sendPasswordResetEmail(auth, user.email);
+      setResetEmailSent(true);
+      setTimeout(() => setResetEmailSent(false), 6000);
+    } catch (err: any) {
+      console.error('Reset email error:', err);
+      setPasswordError(err.message || 'Failed to send password reset email.');
+    }
+  };
 
   const isSuperAdmin = user?.email === 'axceljohnpatriarca@gmail.com';
   const isPro = profile?.plan === 'pro' || isSuperAdmin;
@@ -61,52 +132,59 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       const fetchData = async () => {
-        const [prof, cats, its] = await Promise.all([
-          getBusinessProfile(user.uid),
-          getCategories(user.uid),
-          getMenuItems(user.uid)
-        ]);
-        
-        if (prof) {
-          // If super admin and status is pending, auto-activate profile for convenience
-          if (isSuperAdmin && prof.status === 'pending') {
-            prof.status = 'active';
-            await updateBusinessProfile(user.uid, { ...prof, status: 'active' });
-          }
-
-          setProfile(prof);
-          setCustomSlug(prof.slug || '');
+        try {
+          const [prof, cats, its] = await Promise.all([
+            getBusinessProfile(user.uid),
+            getCategories(user.uid),
+            getMenuItems(user.uid)
+          ]);
           
-          // Generate slug if missing but business name exists
-          if (!prof.slug && prof.businessName) {
-            const newSlug = await generateUniqueSlug(prof.businessName, user.uid);
-            const updated = await updateBusinessProfile(user.uid, { ...prof, slug: newSlug });
-            setProfile(prev => prev ? { ...prev, ...updated } : null);
-            setCustomSlug(newSlug);
-            
-            if (!urlSlug && !isSuperAdmin) {
-              navigate(`/${newSlug}/dashboard`, { replace: true });
+          if (prof) {
+            // If super admin and status is pending, auto-activate profile for convenience
+            if (isSuperAdmin && prof.status === 'pending') {
+              prof.status = 'active';
+              await updateBusinessProfile(user.uid, { ...prof, status: 'active' }).catch(console.warn);
             }
-          } else if (prof.slug && !urlSlug && !isSuperAdmin) {
-            navigate(`/${prof.slug}/dashboard`, { replace: true });
+
+            setProfile(prof);
+            setCustomSlug(prof.slug || '');
+            
+            // Generate slug if missing but business name exists
+            if (!prof.slug && prof.businessName) {
+              const newSlug = await generateUniqueSlug(prof.businessName, user.uid);
+              const updated = await updateBusinessProfile(user.uid, { ...prof, slug: newSlug }).catch(() => null);
+              if (updated) {
+                setProfile(prev => prev ? { ...prev, ...updated } : null);
+              }
+              setCustomSlug(newSlug);
+              
+              if (!urlSlug && !isSuperAdmin) {
+                navigate(`/${newSlug}/dashboard`, { replace: true });
+              }
+            } else if (prof.slug && !urlSlug && !isSuperAdmin) {
+              navigate(`/${prof.slug}/dashboard`, { replace: true });
+            }
+          } else {
+            // Initialize a clean default profile
+            const initialProfile: BusinessProfile = { 
+              uid: user.uid, 
+              businessName: user.displayName || (isSuperAdmin ? 'ChatCart HQ' : 'My Restaurant'), 
+              slug: '', 
+              messengerPageUsername: '', 
+              status: isSuperAdmin ? 'active' : 'pending', 
+              createdAt: Date.now() 
+            };
+            setProfile(initialProfile);
+            await updateBusinessProfile(user.uid, initialProfile).catch(console.warn);
           }
-        } else {
-          // Initialize a clean default profile
-          const initialProfile: BusinessProfile = { 
-            uid: user.uid, 
-            businessName: user.displayName || (isSuperAdmin ? 'ChatCart HQ' : 'My Restaurant'), 
-            slug: '', 
-            messengerPageUsername: '', 
-            status: isSuperAdmin ? 'active' : 'pending', 
-            createdAt: Date.now() 
-          };
-          setProfile(initialProfile);
-          await updateBusinessProfile(user.uid, initialProfile);
+          
+          setCategories(cats || []);
+          setItems(its || []);
+        } catch (error) {
+          console.warn("[Dashboard] Error fetching initial data:", error);
+        } finally {
+          setLoading(false);
         }
-        
-        setCategories(cats);
-        setItems(its);
-        setLoading(false);
       };
 
       fetchData();
@@ -505,6 +583,137 @@ export default function Dashboard() {
                 Save Profile Changes
               </button>
             </form>
+          </div>
+
+          {/* Account Security & Password Card */}
+          <div className="bg-white p-8 rounded-[32px] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] space-y-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-xl font-bold flex items-center gap-2 text-zinc-900">
+                  <KeyRound className="w-5 h-5 text-emerald-600" />
+                  Account Security & Password
+                </h2>
+                <p className="text-xs text-zinc-500 mt-1 font-medium">
+                  Logged in as <span className="font-bold text-zinc-800">{user?.email}</span>
+                </p>
+              </div>
+            </div>
+
+            {isGoogleUser ? (
+              <div className="p-4 bg-emerald-50 rounded-2xl border-2 border-emerald-300 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shrink-0 border border-emerald-200">
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-950">Google Single Sign-On</h4>
+                  <p className="text-[11px] text-emerald-800 font-medium">
+                    Your account is authenticated via Google. You can sign in instantly using the "Sign in with Google" button.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleUpdatePassword} className="space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-zinc-800">Current Password</label>
+                    <button
+                      type="button"
+                      onClick={handleSendResetEmail}
+                      className="text-[11px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                    >
+                      Forgot current password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter your current password"
+                      className="w-full pl-11 pr-11 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-sm font-semibold text-zinc-900 focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-800">New Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="At least 6 chars"
+                        className="w-full pl-11 pr-11 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-sm font-semibold text-zinc-900 focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                      >
+                        {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-zinc-800">Confirm New Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        minLength={6}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter new password"
+                        className="w-full pl-11 pr-4 py-2.5 bg-zinc-50 border-2 border-zinc-900 rounded-xl text-sm font-semibold text-zinc-900 focus:bg-white focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {passwordSuccess && (
+                  <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border-2 border-emerald-600 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-emerald-700" />
+                    {passwordSuccess}
+                  </div>
+                )}
+
+                {resetEmailSent && (
+                  <div className="p-3 bg-blue-50 text-blue-800 text-xs font-bold rounded-xl border-2 border-blue-400 flex items-center gap-2">
+                    <Info className="w-4 h-4 text-blue-600 shrink-0" />
+                    Password reset link sent to {user?.email}! Check your inbox.
+                  </div>
+                )}
+
+                {passwordError && (
+                  <div className="p-3 bg-red-50 text-red-800 text-xs font-bold rounded-xl border-2 border-red-600">
+                    {passwordError}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={passwordSaving || !newPassword}
+                  className="w-full bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-2 border-zinc-950 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer"
+                >
+                  {passwordSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                  Update Password
+                </button>
+              </form>
+            )}
           </div>
 
           {/* Quick Links & QR Code */}
